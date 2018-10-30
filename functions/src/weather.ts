@@ -12,7 +12,7 @@ export function conv_to_query(strToConvert:string): string{
     return newstr;
 }
 
-export async function getlocationkey (key,location){
+export async function fetchlocations (key,location){
     return fetch(`http://dataservice.accuweather.com/locations/v1/cities/search?apikey=${key}&q=${location}`)
     .then(response => response.json())
     .catch(err => console.log('Oops something went wrong' + err))
@@ -30,7 +30,7 @@ export class weatherScanner{
     }
 
     public async getLocationKey(){
-        return await getlocationkey(this.weatherapikey, this.location)
+        return await fetchlocations(this.weatherapikey, this.location)
         .then((json)=>{
             let finalobject:Array<Object> = [];
             for (let x=0; x<json.length; x++){
