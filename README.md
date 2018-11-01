@@ -18,6 +18,7 @@ Eg. `cd functions`
 Assignments: 
 
 **1) Make a static function that converts an epoch time to a specific day**
+
 Epoch time is a format of reporting dates. Epoch time is in seconds from the year 1970
 
 Accuweather uses this so I want to be able to change this into a day
