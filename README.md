@@ -71,6 +71,6 @@ Look into [request.body](https://cloud.google.com/functions/docs/writing/http)
 
 *** Next Round of Assignments ***
 
-Adding Weather data to the corresponding day 
-Integrating google calendar api
-Adding google calendar data to firebase
+-Adding Weather data to the corresponding day
+-Integrating google calendar api
+-Adding google calendar data to firebase
