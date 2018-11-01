@@ -47,10 +47,6 @@ export const get_schedule_from_database(function(request, response){
 
 So currently as you can see in the code below, I am hard coding user data. We want to automize this. 
 Currenty I have: 
-```
-const userData = {fname:"Gowtham",lname:"Sundar", age:19, email: "gowthamraagul@gmail.com"}
-```
-In real life we won't have this. Instead we should put this in the body of the request for each user
 
 ```
 export const addUser = functions.https.onRequest((request,response) =>{
@@ -62,6 +58,16 @@ export const addUser = functions.https.onRequest((request,response) =>{
     docRef.set(userData)
 
 ```
+
+Look closely at 'userData'
+
+```
+const userData = {fname:"Gowtham",lname:"Sundar", age:19, email: "gowthamraagul@gmail.com"}
+```
+In real life we won't have this. Instead we should put this in the body of the request for each user
+
+Look into [request.body](https://cloud.google.com/functions/docs/writing/http) 
+
 
 *** Next Round of Assignments ***
 
