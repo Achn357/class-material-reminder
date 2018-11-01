@@ -32,14 +32,17 @@ function change_from_epoch_to_day(time){
 }
 ```
 
-**2) A cloud function that gets back data from firebase database **
+**2) A cloud function that gets back schedule data from firebase database**
 
+So in the database under each user, there is a collection called --schedule-- . This is the schedule data for each user. 
+Your task is to make a cloud function that gets this data
 EG.
 ```
 export const get_schedule_from_database(function(request, response){
 ../code/ ..
 })
 ```
+
 **3) Change how we add a user to our database**
 
 So currently as you can see in the code below, I am hard coding user data. We want to automize this. 
@@ -60,4 +63,8 @@ export const addUser = functions.https.onRequest((request,response) =>{
 
 ```
 
+*** Next Round of Assignments ***
 
+Adding Weather data to the corresponding day 
+Integrating google calendar api
+Adding google calendar data to firebase
