@@ -17,7 +17,63 @@ export function convert_epoch_to_day(epoch:number):number{
     return d.setUTCSeconds(epoch);
 }
 
+//This function accepts an inconNumber as input and returns a string containing advice on what weather-related items to take
+export function useWeatherCode(iconNumber){
+    if(iconNumber < 1 || iconNumber > 44)
+       return 'this iconNumber is not a recognized number. Please try to identify if an error occured and then try again';
+   
+    if(iconNumber <= 5)
+       return 'No percipitation in sight! Feel free to leave the house without an umbrella.';
+   
+    if(iconNumber <= 8)
+       return 'It is cloudy but percipitation is not in the forecast. You do not need to take an unbrella but be mindful of the weather.';
+       
+    if(iconNumber == 9 || iconNumber == 10)
+       return 'this iconNumber is not a recognized number. Please try to identify if an error occured and then try again';
+   
+    if(iconNumber == 11)
+       return 'Percipitation is not necessarily predicted but fog is. Use your best judgement regarding the weather.';
+   
+    if(iconNumber <= 18)
+       return 'Rain is in the forecast! Grab an umbrella before you leave the house.';
+   
+    if(iconNumber <= 23)
+       return 'Snow is in the forecast! Grab a rain/snow jacket before you leave the house.';
+   
+    if(iconNumber <= 25)
+       return 'Ice or sleet are in the forecast. Grab a rain/snow jacket and an umbrella. If too much is coming down, stay indoors for your own safety.';
+   
+    if(iconNumber == 26)
+       return 'Freezing rain alert! Grab a rain/snow jacket and an umbrella before you leave the house.';
+   
+    if(iconNumber == 27 || iconNumber == 28)
+       return 'this iconNumber is not a recognized number. Please try to identify if an error occured and then try again';
+   
+    if(iconNumber == 29)
+       return 'Rain and snow are in the forecast. Grab a rain/snow jacket and an umbrella before you leave the house.';
+   
+    if(iconNumber == 30)
+       return 'It is forecast to be very hot in the near future. Dress lightly and drink lots of fluids!';
+   
+    if(iconNumber == 31)
+       return 'It is forecast  to be very cold in the near future. Dress heavily and stay warm!';
+   
+    if(iconNumber == 32)
+       return 'It is forecast to be windy, but that is all. Consider dressing heavier as wind usually feels cold.';
+   
+    if(iconNumber <= 37)
+       return 'No percipitation in sight! Feel free to leave the house without an umbrella.';
+   
+    if(iconNumber == 38)
+       return 'It is cloudy but percipitation is not in the forecast. You do not need to take an unbrella but be mindful of the weather.';
+   
+    if(iconNumber <= 42)
+       return 'Rain is in the forecast! Grab an umbrella before you leave the house.';
+   
+    return 'Snow is in the forecast! Grab a rain/snow jacket before you leave the house.';
+   }
 
+   //This class is a wrapper class for obtaining weather information with the AccuWeather API
 export class weatherScanner{
     private readonly weatherapikey:string;
     private location:string;
@@ -38,6 +94,8 @@ export class weatherScanner{
     public getLocation():string{
         return this.location
     }
+
+    //This function accepts a string as input, and returns an array containing pertinent data for each possible location found using the input string
     public async get_All_Possible_Locations(){
         return await fetch(`${this.location_search_endpoint}?apikey=${this.weatherapikey}&q=${this.location}`)
         .then(response => response.json())
@@ -70,6 +128,8 @@ export class weatherScanner{
     public get_location_key():string{
         return this.location_key
     }
+
+        //this function accepts a location key and returns an array of length 12 containing weather forecast information on the location for each of the next 12 hours
     public async get_12hour_forecast(locationkey:string){
             return fetch(`${this.get_12_hour_forecast_endpoint}/${locationkey}?apikey=${this.weatherapikey}`)
             .then(response => response.json())
@@ -100,6 +160,7 @@ export class weatherScanner{
             .catch(err => console.log('Oops something went wrong' + err))
     }
 
+    //this function accepts a location key as input and returns a JSON object containing the current weather conditions for the given location
     public async get_current_conditions(locationkey:string){
         return fetch(`${this.get_current_conditions_endpoint}/${this.location_key}?apikey=${this.weatherapikey}`)
         .then(response => response.json())
