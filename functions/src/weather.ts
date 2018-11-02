@@ -17,6 +17,65 @@ export function convert_epoch_to_day(epoch:number):number{
     return d.setUTCSeconds(epoch);
 }
 
+//This function accepts an epoch time number and returns the current day of the week (Monday. Tuesday, etc.)
+export function change_from_epoch_to_day(epoch:number):string{
+    var seconds_in_year = 31536000;
+    var seconds_in_leap_year = 31622400;
+    var year = 1970;
+    var day = 4;
+
+    let e = new Date(epoch);
+    console.log(e);
+
+    while(epoch > seconds_in_year)
+    {
+        //console.log(`Currently it is ${year} which started on the ${day} day of the week.`);
+
+        if(year % 4 == 0)
+        {
+            epoch = epoch - seconds_in_leap_year;
+            day = (day+2)%7;
+        }
+        else
+        {
+            epoch = epoch - seconds_in_year;
+            day = (day+1)%7;
+        }
+        year++;
+    }
+
+    //console.log(`the current year is ${year} which started on the ${day} day of the week. There is ${epoch} seconds left to parse.`);
+
+    var seconds_in_week = 604800;
+    var week_counter = 0;
+    while(epoch > seconds_in_week)
+    {
+        epoch = epoch - seconds_in_week;
+        week_counter = week_counter + 1;
+    }
+
+    //console.log(`we are currently ${week_counter} weeks into the year. There is ${epoch} seconds left to parse.`);
+
+    var seconds_in_day = 86400;
+    while(epoch > seconds_in_day)
+    {
+        epoch = epoch - seconds_in_day;
+        day = (day+1)%7;
+    }
+
+    var days = {
+        0: 'Sunday',
+        1: 'Monday',
+        2: 'Tuesday',
+        3: 'Wednesday',
+        4: 'Thursday',
+        5: 'Friday',
+        6: 'Saturday'
+    }
+
+    return days[day];
+}
+
 //This function accepts an inconNumber as input and returns a string containing advice on what weather-related items to take
 export function useWeatherCode(iconNumber){
     if(iconNumber < 1 || iconNumber > 44)
