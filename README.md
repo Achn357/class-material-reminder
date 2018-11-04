@@ -74,3 +74,21 @@ Look into [request.body](https://cloud.google.com/functions/docs/writing/http)
 -Adding Weather data to the corresponding day
 -Integrating google calendar api
 -Adding google calendar data to firebase
+
+
+
+**EXPLANATION OF CLOUD FUNCTIONS**
+
+*What are cloud functions:-*
+Cloud functions are a way for us to interact with firebase. The advantange of cloud functions is that we are making our javascript code into its own api service -- which means when we write our cloud function in javascript and deploy it to firebase, the firebase cli gives us an url. 
+
+That url is called a REST ENDPOINT. A REST endpoint is a way for others to access our api/services.
+
+***IMPORTANT NOTE:  ALL CLOUD FUNCTIONS AND FIREBASE FUNCTIONALITY IS PROMISE BASED WHICH MEANS TRADITIONAL NODE.JS FUNCTIONALTY WON'T WORK WELL WITH THIS. More of this will be explained later***
+
+*Types of cloud functions:-*
+
+**Type** | **Uses Promises** | **Can you make REST endpoint with this?** | **Can I access firebase services with this directly?**
+--- | --- | --- | ---
+*HTTPS* | No | Yes | No
+*Background* | Yes | No | Yes
