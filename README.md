@@ -92,3 +92,50 @@ That url is called a REST ENDPOINT. A REST endpoint is a way for others to acces
 --- | --- | --- | ---
 *HTTPS* | No | Yes | No
 *Background* | Yes | No | Yes
+
+-HTTPS functions allow us to make REST endpoints. They take in a request and emit a response once it is done with it's purpose. It has n direct connection with firebase's services like firestore database, storage, hosting, or any gcp services. 
+
+Https cloud functions serves as a wrapper to all of our code so that anyone who calls on these urls can execute our logic.
+
+- Background functions are cloud functions that all us to access firebase's services and use them. Background functions allow us to use Firestore, Storage, Authentication, Machine Learning Kit and all of GCP's services and much more. In real life we will be using both HTTPS and Background Cloud functions combined to really serve our needs. 
+
+====
+How are https cloud functions structured?
+
+With every http cloud function, it has to take in a request(this can be empty) and send a response back to the caller. Here is an example. 
+```
+import * as functions from 'firebase-functions'
+
+export const sayHello = functions.https.onRequest(function(request, response){
+    response.send("Hello World");
+})
+```
+
+In this example it shows the basic way to make a HTTP cloud function. Now this one isn't very useful but it does illustrate its bare nature. 
+
+In order to make a ***HTTPS cloud function***, we have to export it. The name of the function will be what you name the variable, in this case I called mine ``` sayHello ```.
+
+The next part is ```function.https.OnRequest()```
+
+This is basically a way for us to call the functions object and tell it that we are making a HTTPS cloud function. You will pretty much do this for all https cloud functions.
+
+Notice the callback function in ```function.https.OnRequest ...```
+
+it looks like this ```function(request, response){
+    response.send("Hello World");
+}  ```
+
+Inside this is where we actually start our logic. We are taking in a **request** and a **response**. Both of them are objects. For now, do not worry about where they came from, just know that they are available to us. 
+
+The request is the data that the user is giving. If this is a **POST** request, then we will be expecting data from the user to be stored in the **request** object. If this is a GET request, then you don't need to bother with it.
+
+Now the **response** is very important. This is the data you give back to the user. Now with HTTPS cloud functions **YOU ALWAYS NEED TO SEND A RESPONSE BACK TO THE USER**. It doesn't matter if it is actual data, or a error message, you have to make sure you let the user know what actually happened
+
+But **why** do we need to send a response? Well firstly cloud function won't even work if you don't send back data. Secondly in the industry, not sending back a response is the equivalent of being left on read. You don't want that, your clients don't want that. We need to know if our function actually did what it was supposed to do. If something went wrong then it should tell us.
+
+Now, how do we send back a response?
+
+We do it with ```response.send()```.
+
+the **.send()** method is the requivalent of the **return** keyword in regular functions. When the cloud function executes
+```response.send() ```, it knows it is safe to terminate. 
