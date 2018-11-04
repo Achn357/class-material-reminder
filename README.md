@@ -148,3 +148,24 @@ How are Background functions structured?
 To understand background functions, you will first need to understand how promises work
 
 ***remember when I said cloud functions are promise based. Here is the explanation***
+
+Promises are basically a way for us to deal with the difficulty of **TIME**. Promises let us exceute different tasks at the same time or different times. Promises are extremely useful when it comes to dealing with the web. Think of the HTTP protocol and the USPS. Requests and Responses happen at so many different times all over the place and HTTP is responsible for handling those events.
+
+Now if person A made a request at time 1, and person B made a request at time 2. Lets say that person 1 ordered a helicopter,
+while person 2 only order a pencil. A helicopter takes so much time to go get, package, and ship back, while a usb charger only
+takes roughly one day to fully package and ship back. We don't want to slow down all operations of all shipping and orders 
+just so that person A will get their helicopter first and then person B will get their pencil after. There is a better way to do this. 
+
+How about we let all shipping and orders happen all at the same time so that order that take only 1 day to finish can get their order 
+shipped and done with so that tasks can be done faster. If we wait for things to only happen one by one, the postal service would be 
+incredibly slow( cough.. cough ..not that it is exactly fast these days). The same thing goes with the web. If the web waited for 
+everything to happen one by one then all of our favorite sites like twitter or youtube will take sooooo long to load and get going. 
+Doing many tasks all at the same time is called **Asynchronous**
+
+Promises let us to execute code at the same time or different times(with async await which we learned) in order for us to actually have a fast application. 
+
+Now back to background cloud functions. Google made all of their node.js services promise based so that we can make use of the asynchronous nature of node.js. When dealing with promises we always have to handle for successes and errors. 
+
+we do this with **.then() and .catch()**
+
+**.then** let's us take the success data and so something with it. **.catch** lets us catch any errors
