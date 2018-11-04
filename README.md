@@ -76,6 +76,7 @@ Look into [request.body](https://cloud.google.com/functions/docs/writing/http)
 -Adding google calendar data to firebase
 
 
+=======================================================================================================================================
 
 **EXPLANATION OF CLOUD FUNCTIONS**
 
@@ -90,9 +91,10 @@ That url is called a REST ENDPOINT. A REST endpoint is a way for others to acces
 
 **Type** | **Uses Promises** | **Can you make REST endpoint with this?** | **Can I access firebase services with this directly?**
 --- | --- | --- | ---
-*HTTPS* | No | Yes | No
+*HTTPS* | Yes | Yes | No
 *Background* | Yes | No | Yes
 
+===
 -HTTPS functions allow us to make REST endpoints. They take in a request and emit a response once it is done with it's purpose. It has n direct connection with firebase's services like firestore database, storage, hosting, or any gcp services. 
 
 Https cloud functions serves as a wrapper to all of our code so that anyone who calls on these urls can execute our logic.
@@ -137,5 +139,12 @@ Now, how do we send back a response?
 
 We do it with ```response.send()```.
 
-the **.send()** method is the requivalent of the **return** keyword in regular functions. When the cloud function executes
+the **.send()** method is the equivalent of the **return** keyword in regular functions. When the cloud function executes
 ```response.send() ```, it knows it is safe to terminate. 
+
+===
+How are Background functions structured? 
+
+To understand background functions, you will first need to understand how promises work
+
+***remember when I said cloud functions are promise based. Here is the explanation***
