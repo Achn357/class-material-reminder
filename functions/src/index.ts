@@ -17,7 +17,7 @@ let ws = new weather.weatherScanner('HGJe79DbnxNn9DRNEDiH19CNYBXg0Tdy','College 
 export const addUser = functions.https.onRequest((request,response) =>{
     //I am hard coding data right now for testing purposes, 
     //soon I will make it so that you will have to give credentials in the request
-    let userData = {fname:"Gowtham",lname:"Sundar", age:19, email: "gowthamraagul@gmail.com"}
+    let userData = {fname:request.body.fname, lname:request.body.lname, age:request.body.age, email: request.body.email}
     let docRef = firestore.collection('users').doc(`${userData.fname}`);
 
     docRef.set(userData)
