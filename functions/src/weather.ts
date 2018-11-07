@@ -14,9 +14,9 @@ export function conv_to_query(strToConvert:string): string{
 
 //This function accepts an epoch time number and returns the current day of the week (Monday. Tuesday, etc.)
 export function change_from_epoch_to_day(epoch:number):string{
-    let currentDay = new Date(epoch*1000);
+    const currentDay = new Date(epoch*1000);
 
-    var days = {
+    const days = {
         0: 'Sunday',
         1: 'Monday',
         2: 'Tuesday',
