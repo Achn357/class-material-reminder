@@ -15,15 +15,13 @@ let firestore = admin.firestore()
 let ws = new weather.weatherScanner('HGJe79DbnxNn9DRNEDiH19CNYBXg0Tdy','College Station')
 
 export const addUser = functions.https.onRequest((request,response) =>{
-    //I am hard coding data right now for testing purposes, 
-    //soon I will make it so that you will have to give credentials in the request
     let userData = {fname:request.body.fname, lname:request.body.lname, age:request.body.age, email: request.body.email}
     let docRef = firestore.collection('users').doc(`${userData.fname}`);
 
     docRef.set(userData)
 
     .then(ref => {
-        let days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', "Saturday"]
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', "Saturday"]
         for(let x =0; x<days.length; x++){
             docRef.collection('schedule').doc(`${days[x]}`).set({
                 createdAt: Date.now().toString()
@@ -32,7 +30,7 @@ export const addUser = functions.https.onRequest((request,response) =>{
         return `User ${userData.fname} ${userData.lname} created!`
     })
 
-    .then(message => response.send(message))
+    .then(message => response.send({status: 1,mess:message}))
 
     .catch(err => response.status(500).send("ERROR: " + err))
 
