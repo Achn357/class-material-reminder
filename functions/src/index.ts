@@ -27,7 +27,7 @@ export const addUser = functions.https.onRequest((request,response) =>{
         for(let x =0; x<days.length; x++){
             docRef.collection('schedule').doc(`${days[x]}`).set({
                 createdAt: Date.now().toString()
-            }).then((ref)=>1).catch(err => { return "Error in making schedule for user" + err})
+            }).then((reference)=>1).catch(err => { return "Error in making schedule for user" + err})
         }
         return `User ${userData.fname} ${userData.lname} created!`
     })
