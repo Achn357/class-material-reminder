@@ -45,9 +45,9 @@ function useWeatherCode(iconNumber) {
         return 'No percipitation in sight! Feel free to leave the house without an umbrella.';
     if (iconNumber <= 8)
         return 'It is cloudy but percipitation is not in the forecast. You do not need to take an unbrella but be mindful of the weather.';
-    if (iconNumber == 9 || iconNumber == 10)
+    if (iconNumber === 9 || iconNumber === 10)
         return 'this iconNumber is not a recognized number. Please try to identify if an error occured and then try again';
-    if (iconNumber == 11)
+    if (iconNumber === 11)
         return 'Percipitation is not necessarily predicted but fog is. Use your best judgement regarding the weather.';
     if (iconNumber <= 18)
         return 'Rain is in the forecast! Grab an umbrella before you leave the house.';
@@ -55,21 +55,21 @@ function useWeatherCode(iconNumber) {
         return 'Snow is in the forecast! Grab a rain/snow jacket before you leave the house.';
     if (iconNumber <= 25)
         return 'Ice or sleet are in the forecast. Grab a rain/snow jacket and an umbrella. If too much is coming down, stay indoors for your own safety.';
-    if (iconNumber == 26)
+    if (iconNumber === 26)
         return 'Freezing rain alert! Grab a rain/snow jacket and an umbrella before you leave the house.';
-    if (iconNumber == 27 || iconNumber == 28)
+    if (iconNumber === 27 || iconNumber === 28)
         return 'this iconNumber is not a recognized number. Please try to identify if an error occured and then try again';
-    if (iconNumber == 29)
+    if (iconNumber === 29)
         return 'Rain and snow are in the forecast. Grab a rain/snow jacket and an umbrella before you leave the house.';
-    if (iconNumber == 30)
+    if (iconNumber === 30)
         return 'It is forecast to be very hot in the near future. Dress lightly and drink lots of fluids!';
-    if (iconNumber == 31)
+    if (iconNumber === 31)
         return 'It is forecast  to be very cold in the near future. Dress heavily and stay warm!';
-    if (iconNumber == 32)
+    if (iconNumber === 32)
         return 'It is forecast to be windy, but that is all. Consider dressing heavier as wind usually feels cold.';
     if (iconNumber <= 37)
         return 'No percipitation in sight! Feel free to leave the house without an umbrella.';
-    if (iconNumber == 38)
+    if (iconNumber === 38)
         return 'It is cloudy but percipitation is not in the forecast. You do not need to take an unbrella but be mindful of the weather.';
     if (iconNumber <= 42)
         return 'Rain is in the forecast! Grab an umbrella before you leave the house.';
@@ -80,6 +80,9 @@ exports.useWeatherCode = useWeatherCode;
 class weatherScanner {
     constructor(apikey, location) {
         this.location_key = "";
+        this.alllocations_tmp = [];
+        this.state = "";
+        this.country = "";
         this.location_search_endpoint = 'http://dataservice.accuweather.com/locations/v1/cities/search';
         this.get_12_hour_forecast_endpoint = 'http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/';
         this.get_current_conditions_endpoint = 'http://dataservice.accuweather.com/currentconditions/v1/';
@@ -91,6 +94,24 @@ class weatherScanner {
     }
     getLocation() {
         return this.location;
+    }
+    getState() {
+        return this.state;
+    }
+    getCountry() {
+        return this.country;
+    }
+    setState(state) {
+        this.state = state;
+    }
+    setCountry(country) {
+        this.country = country;
+    }
+    set_allLocations(allloc) {
+        this.alllocations_tmp = allloc;
+    }
+    get_allLocations() {
+        return this.alllocations_tmp;
     }
     //This function accepts a string as input, and returns an array containing pertinent data for each possible location found using the input string
     get_All_Possible_Locations() {
@@ -152,6 +173,7 @@ class weatherScanner {
                     cleanedupjson.PrecipitationProbability = json[i].PrecipitationProbability;
                     forecasts_12hour.push(cleanedupjson);
                 }
+                return forecasts_12hour;
             })
                 .catch(err => console.log('Oops something went wrong' + err));
         });
