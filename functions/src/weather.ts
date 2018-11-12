@@ -83,7 +83,7 @@ export function useWeatherCode(iconNumber){
        return 'Rain is in the forecast! Grab an umbrella before you leave the house.';
    
     return 'Snow is in the forecast! Grab a rain/snow jacket before you leave the house.';
-   }
+}
 
    //This class is a wrapper class for obtaining weather information with the AccuWeather API
 export class weatherScanner{
