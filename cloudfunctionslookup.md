@@ -2,7 +2,7 @@ This is a documentation of all of our cloud functions:
 
 ## addUser
 
-**Type:** POST
+**Type:** POST  
 **Payload:**
 ```{
 "fname": "Johnny",
