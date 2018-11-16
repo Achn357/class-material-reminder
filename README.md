@@ -173,12 +173,106 @@ we do this with **.then() and .catch()**
 
 ====
 **NOV 11/2018**
-Assignments:
--cron job/google pub sub
--fcm(firebase cloud messaging)
--notification system(a class in our files that will automatically know when to notify the person)
--google calendar(integration)
--front end(this is for later)
+Assignments:  
+-cron job/google pub sub  
+-fcm(firebase cloud messaging)  
+-notification system(a class in our files that will automatically know when to notify the person)  
+-google calendar(integration)  
+-front end(this is for later)  
 
-Cron Job(Gowtham):
+Cron Job(Gowtham):  
 a scheduled time for a cloud function to trigger
+Notification
+
+Calendar Cloud Function(Davis):  
+Make a cloud function that first fetches data from user's calendar, scrapes through data and returns back a "beautified" json format. (We will later make a new function that actually adds this to our calendar. One of my functions does that already so we will worry about that later)  
+
+Notification Class(Tex and Allen):  
+Make a notification class that looks at all of our scheduled events and actually gives notifications on what materials we need
+
+**Simple Class example in Typescript:**  
+Bankaccount.ts looks like this:  
+```
+
+export class BankAccount{
+    private balance:number;
+    
+    public constructor(initial_amount:number){
+        this.balance = initial_amount;
+    }
+    
+    public deposit(new_money:number):void{
+        this.balance += new_money;
+    }
+    
+    public withdraw(money_to_take_out:number):void{
+        this.balance -= money_to_take_out;
+    }
+
+    public getBalance():number{
+        return this.balance;
+    }
+    
+}
+```
+
+Index.ts looks like this:  
+```
+import {BankAccount} from './BankAccount.ts'
+
+var Gowtham_Bank_Account = new BankAccount(500);
+
+var initial_balance = Gowtham_Bank_Account.getBalance();
+console.log(initial_balance);
+
+Gowtham_Bank_Account.deposit(6000000);
+
+var final_balance = Gowtham_Bank_Account.getBalance();
+console.log(final_balance)
+
+```  
+So let's break this down. Take a look at BankAccount.ts. I started out with `export`. This is basically just a typescript thing where if we want something from one file to be used in another file we use this. In this case I want the `BankAccount` class to be used in the **Index.ts**. Now here come this main part. 
+
+After I wrote `export` I typed in something called **`class`**. Now a class is basically something where we dump many functions and variables that relate to a topic. So in my example I made a `export class BankAccount` class. My `BankAccount` class has everything I want to order to make a BankAccount. So what does a Bank Account do? It holds our money for us right? It keeps track of our money, which is called our **balance**. What else can we do with a Bank Account? We can **deposit** money or **withdraw** money. Instead of writing some stray, random, and hard to keep track of variables and functions, why not we group them all together. Why Not we have one big class that allows us to make a **`BankAccount` Object** that contains it's own **balance variable, deposit, and withdraw functions**?  
+
+So anytime someone calls our BankAccount class, they are basically making a new Object that has it's own **balance variable, deposit, and withdraw functions**.  
+
+So let's look closely at our class now. Where I put `private balance:number;` I am basically declaring a variable. So there is a big difference between *declaring* and *initializing*. 
+
+Declaring is basically when you let typescript know that you want to make a variable but you don't want to give it any value  
+
+Initializing is when you want a variable to have a value.  
+
+Here are some examples of initializing and declaring:-  
+
+Declaring:  
+`var name;`  
+`var money;`
+
+Initializing:  
+`var name = "Gowtham";`  
+`var money = 10000000000;`  
+
+When you declare a variable typescript knows you want to have variable but you aren't really sure what it's value will be just yet. Initializing is when you actually assign it a value. 
+
+Next thing we need to understand is the difference between `public` and `private`. The public keyword is used when we want something to be used outside our class. The private keyword is used when we don't want something to be used outside. So in this case we don't want people to be directly messing with our `balance` variable so we keep that *private*.  
+
+Now back to our code. Look at `private balance:number;`. Now we covered `private` and `balance` but what does the `:number` mean? It basically is telling typescript that is the ***type*** of the variable to typescript. In programming, we have something called ***types*** which lets the computer know what is the nature of whatever we are creating. So some examples of types are ***integer, boolean, double, float, String etc.*** These are the type of things we can create in our program. In the case of our variable `private balance:number;`, we basically telling typescript *"hey this variable is gonna be a number"*.  
+
+The below code will work: 
+
+`private balance:number = 1000;`  
+
+This will ***NOT*** work:   
+
+`private balance:number = "1000";`  
+
+
+The reason the second code snippet won't work is because we are trying to store a string into a variable that we said will hold a number. If you want to store a string then we have to change `number` to `string` like so:  
+
+`private balance:string = "1000";`  
+ 
+The code above will work.  
+
+So let's combine this all together. We are **declaring** a variable that is **private**(cuz we dont want anybody to mess with it) that is going to store a **number**. 
+
