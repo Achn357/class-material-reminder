@@ -2,6 +2,7 @@ import * as weather from './weather'
 import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
 import * as mergeJSON from 'merge-json';
+import * as calendarAPI from './calendar'
 
 //start of initializations
 const config = {apiKey: "AIzaSyA4jNtRhzLZ_i9lXyjjevT1alNPk8u0zeY",
@@ -218,8 +219,28 @@ export const add_12_Hour_Weather = functions.https.onRequest(async(request,respo
 
 })
 
+export const calendarTest = functions.https.onRequest(async(request, response) => {
+    //console.log(1);
+    let cw = new calendarAPI.calendarWrapper();
+    //console.log(2);
+    cw.authorize(cw.getEventData);
+    await response.send('calendarTest complete');
+})
+
+export const storeData = functions.https.onRequest((request, response) => {
+    if(request.method != 'POST')
+    {
+        response.status(400).send('Request made to cloud function "printData" was not a POST request.');
+        return;
+    }
+
+    let storedData = request.body;
+    console.log('request body:');
+    console.log(storedData);
+    //firestore.collection('users').doc('pp7mMDaHUf').collection('schedule').doc('thisWeeksEvents').set(storeData);
+    response.send('data successfully stored');
+})
+
 //end of cloud functions
-
-
 
 
