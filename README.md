@@ -172,7 +172,7 @@ we do this with **.then() and .catch()**
 
 
 ====
-**NOV 11/2018**
+## NOV 11/2018
 Assignments:  
 -cron job/google pub sub  
 -fcm(firebase cloud messaging)  
@@ -189,6 +189,8 @@ Make a cloud function that first fetches data from user's calendar, scrapes thro
 
 Notification Class(Tex and Allen):  
 Make a notification class that looks at all of our scheduled events and actually gives notifications on what materials we need
+
+# How object Oriented Programming works
 
 **Simple Class example in Typescript:**  
 Bankaccount.ts looks like this:  
