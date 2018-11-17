@@ -219,12 +219,15 @@ export const add_12_Hour_Weather = functions.https.onRequest(async(request,respo
 
 })
 
-export const calendarTest = functions.https.onRequest(async(request, response) => {
-    //console.log(1);
+export const calendarTest = functions.https.onRequest((request, response) => {
     let cw = new calendarAPI.calendarWrapper();
-    //console.log(2);
-    cw.authorize(cw.getEventData);
-    await response.send('calendarTest complete');
+    cw.initializeAuth();
+    cw.intializeToken();
+    cw.getEventData().then(data => {
+        response.send(JSON.stringify(data));
+    }).catch(error => {
+        response.status(500).send(error);
+    })
 })
 
 export const storeData = functions.https.onRequest((request, response) => {

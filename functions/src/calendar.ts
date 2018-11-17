@@ -1,11 +1,12 @@
 const fs = require('fs');
 const readline = require('readline');
 const { google } = require('googleapis');
-import * as cloudFunctions from './index';
+import * as fetch from 'node-fetch';
 
 export class calendarWrapper {
   private readonly SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
   private credentials;
+  private authorization;
   private readonly TOKEN_PATH = 'token.json';
 
 
@@ -31,15 +32,23 @@ export class calendarWrapper {
       redirect_uris:["urn:ietf:wg:oauth:2.0:oob","http://localhost"]}}
   }
 
+  public initializeAuth() {
+    const {client_secret, client_id, redirect_uris} = this.credentials.installed;
+   let oAuth2Client = new google.auth.OAuth2(
+       client_id, client_secret, redirect_uris[0]);
+       this.authorization = oAuth2Client;
+ }
+
+ public getAuth() {
+     return this.authorization;
+ }
+
   /**
  * Create an OAuth2 client with credentials, and then execute the
  * given callback function.
  * @param {function} callback The callback to call with the authorized client.
  */
-  public authorize(callback) {
-    const { client_secret, client_id, redirect_uris } = this.credentials.installed;
-    let oAuth2Client = new google.auth.OAuth2(
-      client_id, client_secret, redirect_uris[0]);
+  public intializeToken() {
 
     // Check if we have previously stored a token.
     // fs.readFile(this.TOKEN_PATH, (err, token) => {
@@ -47,25 +56,23 @@ export class calendarWrapper {
     //     this.getAccessToken(oAuth2Client, callback);
     //     return;
     //   }
+    //});
     let token = {
       access_token:"ya29.GltOBubQheiuALvYOlrNwPTrbCZM7WGr-krvJdB2eI4aAXjX79OynwJQ7kpceR75FAbzl_wehmHHMqEMsgpvUdGrL3uogzEyyw_c1ahPNQCNU9jy9SsAU3UR_bm4",
       refresh_token:"1/6q88FVUIf6h2vMIkhOqzokrUeLX_TAAqZAFYbqYkl4s",
       scope:"https://www.googleapis.com/auth/calendar.readonly",
       token_type:"Bearer",
       expiry_date:1541652007014};
-
-      oAuth2Client.setCredentials(token);
-      callback(oAuth2Client);
-    //});
+      this.authorization.setCredentials(token);
   }
 
+  //IGNORE THIS FUNCTION FOR NOW. IT IS A CARRY OVER FROM A PREVIOUS IMPLEMENTATION OF THIS FILE.
   /**
    * Get and store new token after prompting for user authorization, and then
    * execute the given callback with the authorized OAuth2 client.
    * @param {google.auth.OAuth2} oAuth2Client The OAuth2 client to get token for.
-   * @param {getEventsCallback} callback The callback for the authorized client.
    */
-  private getAccessToken(oAuth2Client, callback) {
+  private getAccessToken(oAuth2Client) {
     const authUrl = oAuth2Client.generateAuthUrl({
       access_type: 'offline',
       scope: this.SCOPES,
@@ -88,7 +95,6 @@ export class calendarWrapper {
           if (err2) console.error(err2);
           console.log('Token stored to', this.TOKEN_PATH);
         });
-        callback(oAuth2Client);
       });
     });
   }
@@ -98,7 +104,11 @@ export class calendarWrapper {
    * Returns an object containing an array with each event stored as an element of the array.
    * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
    */
-  public getEventData(auth) {
+  public async getEventData() {
+    let nextWeekEvents = {
+        events: []
+      };
+    let auth = this.authorization;
     const calendar = google.calendar({ version: 'v3', auth });
     const week_epoch = 604800000; //amount of milliseconds in a week
     calendar.events.list({
@@ -113,9 +123,6 @@ export class calendarWrapper {
         return;
       }
       const events = res.data.items;
-      let nextWeekEvents = {
-        events: []
-      };
       if (events.length) {
         events.map((event, i) => {
           let currentEvent = {};
@@ -144,8 +151,8 @@ export class calendarWrapper {
         console.log("No upcoming events found.");
       }
       console.log(nextWeekEvents);
-      //fetch()
-    });
+    })
+   return nextWeekEvents; 
   }
 
 }

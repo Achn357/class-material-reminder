@@ -171,14 +171,3 @@ we do this with **.then() and .catch()**
 **.then** let's us take the success data and so something with it. **.catch** lets us catch any errors
 
 
-====
-**NOV 11/2018**
-Assignments:
--cron job/google pub sub
--fcm(firebase cloud messaging)
--notification system(a class in our files that will automatically know when to notify the person)
--google calendar(integration)
--front end(this is for later)
-
-Cron Job(Gowtham):
-a scheduled time for a cloud function to trigger
