@@ -223,25 +223,38 @@ export const calendarTest = functions.https.onRequest((request, response) => {
     let cw = new calendarAPI.calendarWrapper();
     cw.initializeAuth();
     cw.intializeToken();
-    cw.getEventData().then(data => {
-        response.send(JSON.stringify(data));
-    }).catch(error => {
-        response.status(500).send(error);
-    })
-})
-
-export const storeData = functions.https.onRequest((request, response) => {
-    if(request.method != 'POST')
-    {
-        response.status(400).send('Request made to cloud function "printData" was not a POST request.');
-        return;
-    }
-
-    let storedData = request.body;
-    console.log('request body:');
-    console.log(storedData);
-    //firestore.collection('users').doc('pp7mMDaHUf').collection('schedule').doc('thisWeeksEvents').set(storeData);
-    response.send('data successfully stored');
+    cw.getNextWeekEventData((calendarData) => {
+        let weekEvents = {events: []};
+        const events = calendarData.data.items;
+        if (events.length) {
+                  events.map((event, i) => {
+                    let currentEvent = {};
+                    var start;
+                    var end;
+                    if (event.start.dateTime == undefined) {
+                      start = new Date(event.start.date);
+                      end = new Date(event.end.date);
+                    }
+                    else {
+                      start = new Date(event.start.dateTime);
+                      end = new Date(event.end.dateTime);
+                    }
+          
+                    currentEvent['eventname'] = event.summary;
+                    currentEvent['startdate'] = start;
+                    currentEvent['longstartdate'] = `${start}`;
+                    currentEvent['starttime'] = currentEvent['startdate'].getTime();
+                    currentEvent['enddate'] = end;
+                    currentEvent['longenddate'] = `${end}`;
+                    currentEvent['endtime'] = currentEvent['enddate'].getTime();
+          
+                    weekEvents.events.push(currentEvent);
+                  })
+                } else {
+                  console.log("No upcoming events found.");
+                }
+                response.send(weekEvents);
+    });
 })
 
 //end of cloud functions

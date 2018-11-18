@@ -99,15 +99,7 @@ export class calendarWrapper {
     });
   }
 
-  /**
-   * Get the events within the next week on the users primary calendar and put the events into an object.
-   * Returns an object containing an array with each event stored as an element of the array.
-   * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
-   */
-  public async getEventData() {
-    let nextWeekEvents = {
-        events: []
-      };
+  public getNextWeekEventData(callback) {
     let auth = this.authorization;
     const calendar = google.calendar({ version: 'v3', auth });
     const week_epoch = 604800000; //amount of milliseconds in a week
@@ -118,41 +110,12 @@ export class calendarWrapper {
       singleEvents: true,
       orderBy: 'startTime',
     }, (err, res) => {
-      if (err) {
-        console.log('The API returned an error: ' + err);
-        return;
-      }
-      const events = res.data.items;
-      if (events.length) {
-        events.map((event, i) => {
-          let currentEvent = {};
-          var start;
-          var end;
-          if (event.start.dateTime == undefined) {
-            start = new Date(event.start.date);
-            end = new Date(event.end.date);
-          }
-          else {
-            start = new Date(event.start.dateTime);
-            end = new Date(event.end.dateTime);
-          }
+      if(callback)
+    {
+      callback(res);
 
-          currentEvent['eventname'] = event.summary;
-          currentEvent['startdate'] = start;
-          currentEvent['longstartdate'] = `${start}`;
-          currentEvent['starttime'] = currentEvent['startdate'].getTime();
-          currentEvent['enddate'] = end;
-          currentEvent['longenddate'] = `${end}`;
-          currentEvent['endtime'] = currentEvent['enddate'].getTime();
-
-          nextWeekEvents.events.push(currentEvent);
-        })
-      } else {
-        console.log("No upcoming events found.");
-      }
-      console.log(nextWeekEvents);
+  }
     })
-   return nextWeekEvents; 
   }
 
 }
