@@ -6,6 +6,7 @@ import * as fetch from 'node-fetch';
 import {user} from './user';
 import * as hp from './helperfunctions';
 import { ClientResponse } from 'http';
+import { start } from 'repl';
 
   /**
      ========================================================================================================
@@ -84,7 +85,8 @@ export const addUser = functions.https.onRequest(async (request,response) =>{
         .then(message => response.send(
             {
                 status: 1,
-                message:message
+                message:message,
+                userid: userID
             }
         ))
     
@@ -246,16 +248,24 @@ export const addGoogleCalendarData = functions.https.onRequest(async (req,res) =
 
         const array = data.events;
         array.forEach(element => {
-            const start = hp.change_from_epoch_to_hour(hp.adjust_Epoch_To_Time_Zone(element.starttime/1000, temp_user.get_gmtoffset()));
-            const end = hp.change_from_epoch_to_hour(hp.adjust_Epoch_To_Time_Zone(element.endtime/1000, temp_user.get_gmtoffset()));
+            const start_epoch = hp.adjust_Epoch_To_Time_Zone(element.starttime/1000, temp_user.get_gmtoffset());
+            const end_epoch = hp.adjust_Epoch_To_Time_Zone(element.endtime/1000, temp_user.get_gmtoffset());
             const name = element.eventname;
             const id = hp.generateUserId(10,0,0);
             const day = hp.change_from_epoch_to_day(hp.adjust_Epoch_To_Time_Zone(element.starttime/1000, temp_user.get_gmtoffset()))
 
             docRef.doc(`${day}`).collection('class').doc(`${id}`).set({
                 name:name,
-                start:start,
-                end:end,
+                start:{
+                    start_hour:hp.change_from_epoch_to_hour(start_epoch),
+                    start_time_decimal:hp.change_time_to_decimal(hp.change_from_epoch_to_hour(start_epoch), hp.get_hanging_minutes_of_epoch(start_epoch)),
+                    start_time_normal:hp.change_from_epoch_to_hour(start_epoch)+":"+hp.get_hanging_minutes_of_epoch(start_epoch)
+                },
+                end:{
+                    end_hour:hp.change_from_epoch_to_hour(end_epoch),
+                    end_time_decimal:hp.change_time_to_decimal(hp.change_from_epoch_to_hour(end_epoch),hp.get_hanging_minutes_of_epoch(end_epoch)),
+                    end_time_normal:hp.change_from_epoch_to_hour(end_epoch)+":"+hp.get_hanging_minutes_of_epoch(end_epoch)
+                },
                 id: id
             })
                 .then(ref =>1)

@@ -91,11 +91,13 @@ export function useWeatherCode(iconNumber){
    
     return 'Snow is in the forecast! Grab a rain/snow jacket before you leave the house.';
 }
-
-export function adjust_Epoch_To_Time_Zone(epochtime:number, offset:string){
+export function adjust_Epoch_To_Time_Zone(epochtime:number, offset:string):number{
     return epochtime + parseInt(offset)*3600
 }
-
+export function get_hanging_minutes_of_epoch(epochtime:number):string{
+   const d = new Date(epochtime*1000);
+   return d.toString().split(":")[1];
+}
 export function generateUserId(id_length,alphabetInclude_flag, capital_letters_flag){
 
     let charset = '0123456789';
@@ -108,7 +110,6 @@ export function generateUserId(id_length,alphabetInclude_flag, capital_letters_f
     }
     return result;
 }
-
 export function lastSyncDateTime():string{
     const currentdate = new Date(); 
     const datetime = "Last Sync: " + currentdate.getDate() + "/"
@@ -119,4 +120,9 @@ export function lastSyncDateTime():string{
                     + currentdate.getSeconds();
                     
     return datetime;
+}
+export function change_time_to_decimal(hours, minutes){
+   const hour = parseInt(hours.toString());
+   const min = parseInt(minutes);
+   return hour + (min)/60;
 }
