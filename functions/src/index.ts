@@ -2,6 +2,7 @@ import * as weather from './weather'
 import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
 import * as mergeJSON from 'merge-json';
+import * as calendarAPI from './calendar'
 
 //start of initializations
 const config = {apiKey: "AIzaSyA4jNtRhzLZ_i9lXyjjevT1alNPk8u0zeY",
@@ -218,8 +219,44 @@ export const add_12_Hour_Weather = functions.https.onRequest(async(request,respo
 
 })
 
+export const calendarTest = functions.https.onRequest((request, response) => {
+    let cw = new calendarAPI.calendarWrapper();
+    cw.initializeAuth();
+    cw.intializeToken();
+    cw.getNextWeekEventData((calendarData) => {
+        let weekEvents = {events: []};
+        const events = calendarData.data.items;
+        if (events.length) {
+                  events.map((event, i) => {
+                    let currentEvent = {};
+                    var start;
+                    var end;
+                    if (event.start.dateTime == undefined) {
+                      start = new Date(event.start.date);
+                      end = new Date(event.end.date);
+                    }
+                    else {
+                      start = new Date(event.start.dateTime);
+                      end = new Date(event.end.dateTime);
+                    }
+          
+                    currentEvent['eventname'] = event.summary;
+                    currentEvent['startdate'] = start;
+                    currentEvent['longstartdate'] = `${start}`;
+                    currentEvent['starttime'] = currentEvent['startdate'].getTime();
+                    currentEvent['enddate'] = end;
+                    currentEvent['longenddate'] = `${end}`;
+                    currentEvent['endtime'] = currentEvent['enddate'].getTime();
+          
+                    weekEvents.events.push(currentEvent);
+                  })
+                } else {
+                  console.log("No upcoming events found.");
+                }
+                response.send(weekEvents);
+    });
+})
+
 //end of cloud functions
-
-
 
 

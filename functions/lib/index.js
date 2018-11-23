@@ -12,6 +12,7 @@ const weather = require("./weather");
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const mergeJSON = require("merge-json");
+const calendarAPI = require("./calendar");
 //start of initializations
 const config = { apiKey: "AIzaSyA4jNtRhzLZ_i9lXyjjevT1alNPk8u0zeY",
     authDomain: "class-material-reminder.firebaseapp.com",
@@ -174,5 +175,26 @@ exports.add_12_Hour_Weather = functions.https.onRequest((request, response) => _
         .then(message => response.send({ status: 1, message: "12 hour Schedule has been created" }))
         .catch(err => response.status(500).send({ status: 0, message: "Could not get 12 hour weather. Something went wrong on Accuweather api. Error details: " + err }));
 }));
+exports.calendarTest = functions.https.onRequest((request, response) => {
+    let cw = new calendarAPI.calendarWrapper();
+    cw.initializeAuth();
+    cw.intializeToken();
+    cw.getEventData().then(data => {
+        response.send(JSON.stringify(data));
+    }).catch(error => {
+        response.status(500).send(error);
+    });
+});
+exports.storeData = functions.https.onRequest((request, response) => {
+    if (request.method != 'POST') {
+        response.status(400).send('Request made to cloud function "printData" was not a POST request.');
+        return;
+    }
+    let storedData = request.body;
+    console.log('request body:');
+    console.log(storedData);
+    //firestore.collection('users').doc('pp7mMDaHUf').collection('schedule').doc('thisWeeksEvents').set(storeData);
+    response.send('data successfully stored');
+});
 //end of cloud functions
 //# sourceMappingURL=index.js.map
