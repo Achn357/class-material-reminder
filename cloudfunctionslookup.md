@@ -12,7 +12,7 @@ message:
 
 *message:* a sample message to let client know about the operation  
 
-#H1 REST ENDPOINTS
+# REST ENDPOINTS
 ================================================================================================================================
 ## Add User
 
@@ -168,5 +168,5 @@ However, the current form of the function does not allow for a failure message t
 **REST ENDPOINT:**  ``` https://us-central1-class-material-reminder.cloudfunctions.net/addGoogleCalendarData ```  
 
 
-#H1 BACKGROUND FUNCTIONS
+# BACKGROUND FUNCTIONS
 ================================================================================================================================
