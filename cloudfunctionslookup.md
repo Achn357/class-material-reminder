@@ -12,7 +12,8 @@ message:
 
 *message:* a sample message to let client know about the operation  
 
-
+#H1 REST ENDPOINTS
+================================================================================================================================
 ## Add User
 
 **Type:** POST  
@@ -44,6 +45,8 @@ A failure message looks like this:
 **Function:** To add a user to our database  
 **REST ENDPOINT:**  ``` https://us-central1-class-material-reminder.cloudfunctions.net/addUser ```    
 
+================================================================================================================================
+
 ## Add 12 Hour Weather to User
 
 **Type:** POST  
@@ -72,6 +75,39 @@ message:"Could not get 12 hour weather. Something went wrong on Accuweather api.
 **Function:** To add 12 hour weather to user's schedule  
 **REST ENDPOINT:**  ``` https://us-central1-class-material-reminder.cloudfunctions.net/add_12_Hour_Weather ```  
 
+================================================================================================================================
+
+## Add Current Weather to User
+
+**Type:** POST  
+**Payload:**
+```
+{
+	"userid":"WMLlAHKkmf"
+}
+```
+**Response:**  
+A success message looks like this:  
+```
+{
+	status:1,
+	message:"Current hour is added to the schedule"
+
+}
+```
+A sample failure message looks like this:  
+```
+{
+	status:0,
+	message:"Something went wrong in adding the data to user"
+}
+```
+
+**Function:** To add current weather to user's schedule  
+**REST ENDPOINT:**  ``` https://us-central1-class-material-reminder.cloudfunctions.net/add_current_weather ```  
+
+================================================================================================================================
+
 ## Calendar Test
 
 **Type:** GET  
@@ -99,3 +135,38 @@ However, the current form of the function does not allow for a failure message t
 
 **Function:** To obtain the events on a user's calendar within the next week 
 **REST ENDPOINT:**  ``` https://us-central1-class-material-reminder.cloudfunctions.net/calendarTest ```  
+
+================================================================================================================================
+
+## addGoogleCalendarData
+
+**Type:** POST  
+**Payload:**
+
+{
+	"userid":"DR9bT69MpW"
+}
+
+**Response:**  
+A success message looks like this:  
+```
+{
+	status:1,
+	message:"Finished writing google calendar events to firestore"
+}
+```
+A sample failure message looks like this:  
+```
+{
+	status:0,
+	message:"Something went wrong in fetching the schedule data cloud function."
+}
+```
+However, the current form of the function does not allow for a failure message to be sent.
+
+**Function:** To obtain the events on a user's calendar within the next week 
+**REST ENDPOINT:**  ``` https://us-central1-class-material-reminder.cloudfunctions.net/addGoogleCalendarData ```  
+
+
+#H1 BACKGROUND FUNCTIONS
+================================================================================================================================
