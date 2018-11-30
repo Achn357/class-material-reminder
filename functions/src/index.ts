@@ -2,10 +2,13 @@ import * as weather from './weather';
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import * as mergeJSON from 'merge-json';
+
 import * as fetch from 'node-fetch';
 import {user} from './user';
 import * as hp from './helperfunctions';
 import {schemaChecker} from './schema_checker'
+import * as calendarAPI from './calendar'
+
 
 
   /**
@@ -240,6 +243,7 @@ export const sayHello = functions.https.onRequest(async (request,response) =>{
     .catch(err => response.status(500).send(""+err))
 })
 
+
 export const firstcronjob = functions.pubsub.topic('sayinghello').onPublish(async message =>{
     //adds 12 hoour weather for every user every 12 hours
 
@@ -310,6 +314,52 @@ export const addGoogleCalendarData = functions.https.onRequest(async (req,res) =
     }
     
 })
+
+export const calendarTest = functions.https.onRequest((request, response) => {
+    let cw = new calendarAPI.calendarWrapper();
+    cw.initializeAuth();
+    cw.intializeToken();
+    cw.getNextWeekEventData((calendarData) => {
+        let weekEvents = {events: []};
+        const events = calendarData.data.items;
+        if (events.length) {
+                  events.map((event, i) => {
+                    let currentEvent = {};
+                    var start;
+                    var end;
+                    if (event.start.dateTime == undefined) {
+                      start = new Date(event.start.date);
+                      end = new Date(event.end.date);
+                    }
+                    else {
+                      start = new Date(event.start.dateTime);
+                      end = new Date(event.end.dateTime);
+                    }
+          
+                    currentEvent['eventname'] = event.summary;
+                    currentEvent['startdate'] = start;
+                    currentEvent['longstartdate'] = `${start}`;
+                    currentEvent['starttime'] = currentEvent['startdate'].getTime();
+                    currentEvent['enddate'] = end;
+                    currentEvent['longenddate'] = `${end}`;
+                    currentEvent['endtime'] = currentEvent['enddate'].getTime();
+          
+                    weekEvents.events.push(currentEvent);
+                  })
+                } else {
+                  console.log("No upcoming events found.");
+                }
+                response.send(
+                    {
+                     status: 1,
+                     message: 'data for next week successfully acquired',
+                     weekEvents: weekEvents
+                    });
+    });
+})
+
+//end of cloud functions
+
 
 
 /* export const getadduserids = functions.https.onRequest(async (request,response)=>{

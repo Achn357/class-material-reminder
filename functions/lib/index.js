@@ -12,15 +12,18 @@ const weather = require("./weather");
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const mergeJSON = require("merge-json");
+
 const fetch = require("node-fetch");
 const user_1 = require("./user");
 const hp = require("./helperfunctions");
 const schema_checker_1 = require("./schema_checker");
+const calendarAPI = require("./calendar");
 /**
    ========================================================================================================
    ========================================    INITIALIZATIONS     ========================================
    ========================================================================================================
    */
+
 const config = { apiKey: "AIzaSyA4jNtRhzLZ_i9lXyjjevT1alNPk8u0zeY",
     authDomain: "class-material-reminder.firebaseapp.com",
     databaseURL: "https://class-material-reminder.firebaseio.com",
@@ -253,7 +256,44 @@ exports.addGoogleCalendarData = functions.https.onRequest((req, res) => __awaite
         res.send({ status: 0, message: "Please send userid in request body" });
     }
 }));
-/* export const getadduserids = functions.https.onRequest(async (request,response)=>{
-    firestore.
-}) */ 
+
+=======
+exports.calendarTest = functions.https.onRequest((request, response) => {
+    let cw = new calendarAPI.calendarWrapper();
+    cw.initializeAuth();
+    cw.intializeToken();
+    cw.getNextWeekEventData((calendarData) => {
+        let weekEvents = { events: [] };
+        const events = calendarData.data.items;
+        if (events.length) {
+            events.map((event, i) => {
+                let currentEvent = {};
+                var start;
+                var end;
+                if (event.start.dateTime == undefined) {
+                    start = new Date(event.start.date);
+                    end = new Date(event.end.date);
+                }
+                else {
+                    start = new Date(event.start.dateTime);
+                    end = new Date(event.end.dateTime);
+                }
+                currentEvent['eventname'] = event.summary;
+                currentEvent['startdate'] = start;
+                currentEvent['longstartdate'] = `${start}`;
+                currentEvent['starttime'] = currentEvent['startdate'].getTime();
+                currentEvent['enddate'] = end;
+                currentEvent['longenddate'] = `${end}`;
+                currentEvent['endtime'] = currentEvent['enddate'].getTime();
+                weekEvents.events.push(currentEvent);
+            });
+        }
+        else {
+            console.log("No upcoming events found.");
+        }
+        response.send(weekEvents);
+    });
+});
+//end of cloud functions
+
 //# sourceMappingURL=index.js.map
