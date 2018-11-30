@@ -71,3 +71,31 @@ message:"Could not get 12 hour weather. Something went wrong on Accuweather api.
 
 **Function:** To add 12 hour weather to user's schedule  
 **REST ENDPOINT:**  ``` https://us-central1-class-material-reminder.cloudfunctions.net/add_12_Hour_Weather ```  
+
+## Calendar Test
+
+**Type:** GET  
+**Payload:**
+
+In it's final form this function will accept a user id, but right now it does not.
+
+**Response:**  
+A success message looks like this:  
+```
+{
+status: 1,
+message: 'data for next week successfully acquired',
+weekEvents: weekEvents
+}
+```
+A sample failure message looks like this:  
+```
+{
+status:0,
+message:"Could not get next week's events. Something went wrong on google calendar api."
+}
+```
+However, the current form of the function does not allow for a failure message to be sent.
+
+**Function:** To obtain the events on a user's calendar within the next week 
+**REST ENDPOINT:**  ``` https://us-central1-class-material-reminder.cloudfunctions.net/calendarTest ```  

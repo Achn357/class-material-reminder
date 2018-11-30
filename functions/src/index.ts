@@ -253,7 +253,12 @@ export const calendarTest = functions.https.onRequest((request, response) => {
                 } else {
                   console.log("No upcoming events found.");
                 }
-                response.send(weekEvents);
+                response.send(
+                    {
+                     status: 1,
+                     message: 'data for next week successfully acquired',
+                     weekEvents: weekEvents
+                    });
     });
 })
 
