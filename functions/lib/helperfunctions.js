@@ -82,6 +82,11 @@ function adjust_Epoch_To_Time_Zone(epochtime, offset) {
     return epochtime + parseInt(offset) * 3600;
 }
 exports.adjust_Epoch_To_Time_Zone = adjust_Epoch_To_Time_Zone;
+function get_hanging_minutes_of_epoch(epochtime) {
+    const d = new Date(epochtime * 1000);
+    return d.toString().split(":")[1];
+}
+exports.get_hanging_minutes_of_epoch = get_hanging_minutes_of_epoch;
 function generateUserId(id_length, alphabetInclude_flag, capital_letters_flag) {
     let charset = '0123456789';
     if (alphabetInclude_flag !== 0)
@@ -106,4 +111,10 @@ function lastSyncDateTime() {
     return datetime;
 }
 exports.lastSyncDateTime = lastSyncDateTime;
+function change_time_to_decimal(hours, minutes) {
+    const hour = parseInt(hours.toString());
+    const min = parseInt(minutes);
+    return hour + (min) / 60;
+}
+exports.change_time_to_decimal = change_time_to_decimal;
 //# sourceMappingURL=helperfunctions.js.map
