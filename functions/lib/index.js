@@ -12,7 +12,6 @@ const weather = require("./weather");
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const mergeJSON = require("merge-json");
-
 const fetch = require("node-fetch");
 const user_1 = require("./user");
 const hp = require("./helperfunctions");
@@ -23,7 +22,6 @@ const calendarAPI = require("./calendar");
    ========================================    INITIALIZATIONS     ========================================
    ========================================================================================================
    */
-
 const config = { apiKey: "AIzaSyA4jNtRhzLZ_i9lXyjjevT1alNPk8u0zeY",
     authDomain: "class-material-reminder.firebaseapp.com",
     databaseURL: "https://class-material-reminder.firebaseio.com",
@@ -256,13 +254,31 @@ exports.addGoogleCalendarData = functions.https.onRequest((req, res) => __awaite
         res.send({ status: 0, message: "Please send userid in request body" });
     }
 }));
-
-=======
 exports.calendarTest = functions.https.onRequest((request, response) => {
-    let cw = new calendarAPI.calendarWrapper();
-    cw.initializeAuth();
-    cw.intializeToken();
-    cw.getNextWeekEventData((calendarData) => {
+    const correct_schema = { access_token: "", refresh_token: "", scope: "", token_type: "", expiry_date: "" };
+    let sch = new schema_checker_1.schemaChecker(correct_schema);
+    const check = sch.compare_schema(request.body);
+    console.log(request.body);
+    console.log(check.length);
+    if (check.length !== 0) {
+        let missingFields = "";
+        check.forEach(field => {
+            missingFields = missingFields + field + ' ';
+        });
+        response.status(501).send({ status: 0, message: "The following fields are missing from the request body: " + missingFields });
+    }
+    let token = {
+        access_token: request.body.access_token,
+        refresh_token: request.body.refresh_token,
+        scope: request.body.scope,
+        token_type: request.body.token_type,
+        expiry_date: request.body.expiry_date
+    };
+    let cw = new calendarAPI.calendarWrapper(token);
+    cw.getNextWeekEventData((error, calendarData) => {
+        if (error !== null) {
+            response.status(500).send({ status: 0, message: "Something went wrong in fetching the data from the google calendar api. Error details: " + error });
+        }
         let weekEvents = { events: [] };
         const events = calendarData.data.items;
         if (events.length) {
@@ -291,9 +307,19 @@ exports.calendarTest = functions.https.onRequest((request, response) => {
         else {
             console.log("No upcoming events found.");
         }
-        response.send(weekEvents);
+        response.send({
+            status: 1,
+            message: 'data for next week successfully acquired',
+            weekEvents: weekEvents
+        });
     });
+    //}
+    //else {
+    //    response.send({status:0,message:"Please send userid in request body"})
+    //}
 });
 //end of cloud functions
-
+/* export const getadduserids = functions.https.onRequest(async (request,response)=>{
+    firestore.
+}) */ 
 //# sourceMappingURL=index.js.map

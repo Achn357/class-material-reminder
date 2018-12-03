@@ -5,12 +5,11 @@ import * as fetch from 'node-fetch';
 
 export class calendarWrapper {
   private readonly SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
-  private credentials;
   private authorization;
   private readonly TOKEN_PATH = 'token.json';
 
 
-  constructor() {
+  constructor(token) {
     // Load client secrets from a local file.
     // fs.readFile('credentials.json', (err, content) => {
     //   if (err) { 
@@ -21,7 +20,7 @@ export class calendarWrapper {
     // });
 
     //the above code can be used when we have access to an actual credentials file
-    this.credentials = {
+      const credentials = {
       installed:{
       client_id:"532659783292-tf0bihp5niek445hd027k5hc9e5erh2j.apps.googleusercontent.com",
       project_id:"class-material-reminder",
@@ -30,41 +29,51 @@ export class calendarWrapper {
       auth_provider_x509_cert_url:"https://www.googleapis.com/oauth2/v1/certs",
       client_secret:"rtv_xaFFveJRZb6sA5-_Lomp",
       redirect_uris:["urn:ietf:wg:oauth:2.0:oob","http://localhost"]}}
+
+      const {client_secret, client_id, redirect_uris} = credentials.installed;
+      let oAuth2Client = new google.auth.OAuth2(
+       client_id, client_secret, redirect_uris[0]);
+      
+
+      //  let token = {
+      //   access_token:"ya29.GltOBubQheiuALvYOlrNwPTrbCZM7WGr-krvJdB2eI4aAXjX79OynwJQ7kpceR75FAbzl_wehmHHMqEMsgpvUdGrL3uogzEyyw_c1ahPNQCNU9jy9SsAU3UR_bm4",
+      //   refresh_token:"1/6q88FVUIf6h2vMIkhOqzokrUeLX_TAAqZAFYbqYkl4s",
+      //   scope:"https://www.googleapis.com/auth/calendar.readonly",
+      //   token_type:"Bearer",
+      //   expiry_date:1541652007014};
+         oAuth2Client.setCredentials(token);
+        this.authorization = oAuth2Client;
   }
 
-  public initializeAuth() {
-    const {client_secret, client_id, redirect_uris} = this.credentials.installed;
-   let oAuth2Client = new google.auth.OAuth2(
-       client_id, client_secret, redirect_uris[0]);
-       this.authorization = oAuth2Client;
- }
-
- public getAuth() {
-     return this.authorization;
- }
+//   public initializeAuth() {
+//     const {client_secret, client_id, redirect_uris} = this.credentials.installed;
+//    let oAuth2Client = new google.auth.OAuth2(
+//        client_id, client_secret, redirect_uris[0]);
+//        this.authorization = oAuth2Client;
+//  }
 
   /**
  * Create an OAuth2 client with credentials, and then execute the
  * given callback function.
  * @param {function} callback The callback to call with the authorized client.
  */
-  public intializeToken() {
+  // public intializeToken() {
 
-    // Check if we have previously stored a token.
-    // fs.readFile(this.TOKEN_PATH, (err, token) => {
-    //   if (err) {
-    //     this.getAccessToken(oAuth2Client, callback);
-    //     return;
-    //   }
-    //});
-    let token = {
-      access_token:"ya29.GltOBubQheiuALvYOlrNwPTrbCZM7WGr-krvJdB2eI4aAXjX79OynwJQ7kpceR75FAbzl_wehmHHMqEMsgpvUdGrL3uogzEyyw_c1ahPNQCNU9jy9SsAU3UR_bm4",
-      refresh_token:"1/6q88FVUIf6h2vMIkhOqzokrUeLX_TAAqZAFYbqYkl4s",
-      scope:"https://www.googleapis.com/auth/calendar.readonly",
-      token_type:"Bearer",
-      expiry_date:1541652007014};
-      this.authorization.setCredentials(token);
-  }
+  //   // Check if we have previously stored a token.
+  //   // fs.readFile(this.TOKEN_PATH, (err, token) => {
+  //   //   if (err) {
+  //   //     this.getAccessToken(oAuth2Client, callback);
+  //   //     return;
+  //   //   }
+  //   //});
+  //   let token = {
+  //     access_token:"ya29.GltOBubQheiuALvYOlrNwPTrbCZM7WGr-krvJdB2eI4aAXjX79OynwJQ7kpceR75FAbzl_wehmHHMqEMsgpvUdGrL3uogzEyyw_c1ahPNQCNU9jy9SsAU3UR_bm4",
+  //     refresh_token:"1/6q88FVUIf6h2vMIkhOqzokrUeLX_TAAqZAFYbqYkl4s",
+  //     scope:"https://www.googleapis.com/auth/calendar.readonly",
+  //     token_type:"Bearer",
+  //     expiry_date:1541652007014};
+  //     this.authorization.setCredentials(token);
+  // }
 
   //IGNORE THIS FUNCTION FOR NOW. IT IS A CARRY OVER FROM A PREVIOUS IMPLEMENTATION OF THIS FILE.
   /**
@@ -112,8 +121,7 @@ export class calendarWrapper {
     }, (err, res) => {
       if(callback)
     {
-      callback(res);
-
+      callback(err, res);
   }
     })
   }

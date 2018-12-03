@@ -128,10 +128,9 @@ A sample failure message looks like this:
 ```
 {
 status:0,
-message:"Could not get next week's events. Something went wrong on google calendar api."
+message:"CSomething went wrong in fetching the data from the google calendar api."
 }
 ```
-However, the current form of the function does not allow for a failure message to be sent.
 
 **Function:** To obtain the events on a user's calendar within the next week 
 **REST ENDPOINT:**  ``` https://us-central1-class-material-reminder.cloudfunctions.net/calendarTest ```  
