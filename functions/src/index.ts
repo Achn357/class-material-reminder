@@ -2,7 +2,6 @@ import * as weather from './weather';
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import * as mergeJSON from 'merge-json';
-
 import * as fetch from 'node-fetch';
 import {user} from './user';
 import * as hp from './helperfunctions';
@@ -39,7 +38,7 @@ const firestore = admin.firestore();
      */
 
 
-export const addUser = functions.https.onRequest(async (request,response) =>{
+export const addUser = functions.https.onRequest(async(request,response) =>{
     const correct_schema = {fname:"",lname:"",age:"",email:"",location:""};
     let sch = new schemaChecker(correct_schema);
     const check = sch.compare_schema(request.body)
@@ -219,10 +218,10 @@ export const add_current_weather = functions.https.onRequest(async (request,resp
                 "units":data.Temperature_Units,
                 "weathericon":data.WeatherIcon,
                 "phrase":data.IconPhrase,
-                "notification_message":hp.useWeatherCode(data.IconPhrase)
+                "notification_message":hp.useWeatherCode(parseInt(data.IconPhrase))
             })
             .then(refe => 1)
-            .catch(err => response.status(500).send("Something went wrong in adding the data to user"))
+            .catch(err => response.status(500).send({status:0,message:"Something went wrong in adding the data to user"}))
         })
         .then(mssg => response.send({status:1,message:"Current hour is added to the schedule"}))
         .catch(err => response.status(500).send({status:0,message:"Could not get 12 hour weather. Something went wrong on Accuweather api. Error details: "+ err}))
@@ -242,7 +241,6 @@ export const sayHello = functions.https.onRequest(async (request,response) =>{
     }).then(ref => response.send(`hello at synced on ${d.getMonth()}/${d.getDay()}/${d.getFullYear()} at ${d.getHours()}:${d.getMinutes()}`))
     .catch(err => response.status(500).send(""+err))
 })
-
 
 export const firstcronjob = functions.pubsub.topic('sayinghello').onPublish(async message =>{
     //adds 12 hoour weather for every user every 12 hours
@@ -357,11 +355,3 @@ export const calendarTest = functions.https.onRequest((request, response) => {
                     });
     });
 })
-
-//end of cloud functions
-
-
-
-/* export const getadduserids = functions.https.onRequest(async (request,response)=>{
-    firestore.
-}) */
