@@ -314,10 +314,37 @@ export const addGoogleCalendarData = functions.https.onRequest(async (req,res) =
 })
 
 export const calendarTest = functions.https.onRequest((request, response) => {
-    let cw = new calendarAPI.calendarWrapper();
-    cw.initializeAuth();
-    cw.intializeToken();
-    cw.getNextWeekEventData((calendarData) => {
+    const correct_schema = {access_token:"",refresh_token:"",scope:"",token_type:"",expiry_date:""};
+    let sch = new schemaChecker(correct_schema);
+    const check = sch.compare_schema(request.body);
+    console.log(request.body);
+    console.log(check.length);
+
+    if(check.length !== 0)
+    {
+       let missingFields = "";
+       check.forEach(field => {
+           missingFields = missingFields + field + ' ';
+       })
+       
+       response.status(501).send({status: 0, message: "The following fields are missing from the request body: " + missingFields});
+    }
+
+    let token = {
+        access_token: request.body.access_token,
+        refresh_token: request.body.refresh_token,
+        scope: request.body.scope,
+        token_type: request.body.token_type,
+        expiry_date: request.body.expiry_date
+    }
+
+    let cw = new calendarAPI.calendarWrapper(token);
+    cw.getNextWeekEventData((error, calendarData) => {
+        if(error !== null)
+        {
+            response.status(500).send({status: 0, message: "Something went wrong in fetching the data from the google calendar api. Error details: " + error});
+        }
+
         let weekEvents = {events: []};
         const events = calendarData.data.items;
         if (events.length) {
@@ -354,4 +381,8 @@ export const calendarTest = functions.https.onRequest((request, response) => {
                      weekEvents: weekEvents
                     });
     });
+//}
+//else {
+//    response.send({status:0,message:"Please send userid in request body"})
+//}
 })
