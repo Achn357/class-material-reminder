@@ -13,7 +13,7 @@ message:
 *message:* a sample message to let client know about the operation  
 
 # REST ENDPOINTS
-================================================================================================================================
+========================================================================================
 ## Add User
 
 **Type:** POST  
@@ -45,7 +45,7 @@ A failure message looks like this:
 **Function:** To add a user to our database  
 **REST ENDPOINT:**  ``` https://us-central1-class-material-reminder.cloudfunctions.net/addUser ```    
 
-================================================================================================================================
+========================================================================================
 
 ## Add 12 Hour Weather to User
 
@@ -75,7 +75,7 @@ message:"Could not get 12 hour weather. Something went wrong on Accuweather api.
 **Function:** To add 12 hour weather to user's schedule  
 **REST ENDPOINT:**  ``` https://us-central1-class-material-reminder.cloudfunctions.net/add_12_Hour_Weather ```  
 
-================================================================================================================================
+========================================================================================
 
 ## Add Current Weather to User
 
@@ -106,7 +106,7 @@ A sample failure message looks like this:
 **Function:** To add current weather to user's schedule  
 **REST ENDPOINT:**  ``` https://us-central1-class-material-reminder.cloudfunctions.net/add_current_weather ```  
 
-================================================================================================================================
+========================================================================================
 
 ## Calendar Test
 
@@ -135,7 +135,7 @@ message:"CSomething went wrong in fetching the data from the google calendar api
 **Function:** To obtain the events on a user's calendar within the next week 
 **REST ENDPOINT:**  ``` https://us-central1-class-material-reminder.cloudfunctions.net/calendarTest ```  
 
-================================================================================================================================
+========================================================================================
 
 ## addGoogleCalendarData
 
@@ -168,4 +168,4 @@ However, the current form of the function does not allow for a failure message t
 
 
 # BACKGROUND FUNCTIONS
-================================================================================================================================
+========================================================================================
