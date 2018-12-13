@@ -235,17 +235,16 @@ export const add_current_weather = functions.https.onRequest(async (request,resp
 export const sayHello = functions.https.onRequest(async (request,response) =>{
     const d = new Date();
 
-    firestore.collection('hellotesting').doc('hello').update({
+    firestore.collection('hellotesting').doc('hello' + d.getSeconds()).update({
         message:"hello world",
         time:`synced on ${d.getMonth()}/${d.getDay()}/${d.getFullYear()} at ${d.getHours()}:${d.getMinutes()}`
-    }).then(ref => response.send(`hello at synced on ${d.getMonth()}/${d.getDay()}/${d.getFullYear()} at ${d.getHours()}:${d.getMinutes()}`))
-    .catch(err => response.status(500).send(""+err))
+    })
+    .then(ref => response.send({message:`hello at synced on ${d.getMonth()}/${d.getDay()}/${d.getFullYear()} at ${d.getHours()}:${d.getMinutes()}`}))
+    .catch(err => response.status(500).send({message:""+err}))
 })
 
 export const firstcronjob = functions.pubsub.topic('sayinghello').onPublish(async message =>{
-    //adds 12 hoour weather for every user every 12 hours
-
-    //collecting all ids
+    
     
     await fetch('https://us-central1-class-material-reminder.cloudfunctions.net/sayHello')
     .then(response => {
@@ -386,3 +385,4 @@ export const calendarTest = functions.https.onRequest((request, response) => {
 //    response.send({status:0,message:"Please send userid in request body"})
 //}
 })
+
