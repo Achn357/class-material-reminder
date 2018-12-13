@@ -176,10 +176,10 @@ exports.add_current_weather = functions.https.onRequest((request, response) => _
                 "units": data.Temperature_Units,
                 "weathericon": data.WeatherIcon,
                 "phrase": data.IconPhrase,
-                "notification_message": hp.useWeatherCode(data.IconPhrase)
+                "notification_message": hp.useWeatherCode(parseInt(data.IconPhrase))
             })
                 .then(refe => 1)
-                .catch(err => response.status(500).send("Something went wrong in adding the data to user"));
+                .catch(err => response.status(500).send({ status: 0, message: "Something went wrong in adding the data to user" }));
         })
             .then(mssg => response.send({ status: 1, message: "Current hour is added to the schedule" }))
             .catch(err => response.status(500).send({ status: 0, message: "Could not get 12 hour weather. Something went wrong on Accuweather api. Error details: " + err }));
@@ -190,15 +190,14 @@ exports.add_current_weather = functions.https.onRequest((request, response) => _
 }));
 exports.sayHello = functions.https.onRequest((request, response) => __awaiter(this, void 0, void 0, function* () {
     const d = new Date();
-    firestore.collection('hellotesting').doc('hello').update({
+    firestore.collection('hellotesting').doc('hello' + d.getSeconds()).update({
         message: "hello world",
         time: `synced on ${d.getMonth()}/${d.getDay()}/${d.getFullYear()} at ${d.getHours()}:${d.getMinutes()}`
-    }).then(ref => response.send(`hello at synced on ${d.getMonth()}/${d.getDay()}/${d.getFullYear()} at ${d.getHours()}:${d.getMinutes()}`))
-        .catch(err => response.status(500).send("" + err));
+    })
+        .then(ref => response.send({ message: `hello at synced on ${d.getMonth()}/${d.getDay()}/${d.getFullYear()} at ${d.getHours()}:${d.getMinutes()}` }))
+        .catch(err => response.status(500).send({ message: "" + err }));
 }));
 exports.firstcronjob = functions.pubsub.topic('sayinghello').onPublish((message) => __awaiter(this, void 0, void 0, function* () {
-    //adds 12 hoour weather for every user every 12 hours
-    //collecting all ids
     yield fetch('https://us-central1-class-material-reminder.cloudfunctions.net/sayHello')
         .then(response => {
         console.log(response.json());
@@ -318,8 +317,3 @@ exports.calendarTest = functions.https.onRequest((request, response) => {
     //    response.send({status:0,message:"Please send userid in request body"})
     //}
 });
-//end of cloud functions
-/* export const getadduserids = functions.https.onRequest(async (request,response)=>{
-    firestore.
-}) */ 
-//# sourceMappingURL=index.js.map
