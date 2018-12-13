@@ -317,4 +317,3 @@ exports.calendarTest = functions.https.onRequest((request, response) => {
     //    response.send({status:0,message:"Please send userid in request body"})
     //}
 });
-//# sourceMappingURL=index.js.map
