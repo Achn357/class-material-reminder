@@ -4,16 +4,8 @@
      ========================================================================================================
      */
 
-export function conv_to_query(strToConvert:string): string{
-    let newstr:string = ""
-    for (let i:number=0; i< strToConvert.length; i++){
-      if(strToConvert[i] === " "){
-        newstr += "+"
-      }else{
-        newstr+=strToConvert[i]
-      }
-    }
-    return newstr;
+export function conv_to_query(str:string){
+   return str.replace(/ /g,'+')
 }
 export function change_from_epoch_to_hour(epoch:number){
     const currentDay = new Date(epoch*1000);
