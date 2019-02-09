@@ -11,7 +11,7 @@ class notifications {
      * @param a removes any duplicate values in a single array
      */
     remove_duplicates(a) {
-        var seen = {};
+        const seen = {};
         return a.filter(function (item) {
             return seen.hasOwnProperty(item) ? false : (seen[item] = true);
         });
@@ -33,7 +33,7 @@ class notifications {
      * returns the materials
      */
     getmaterials() {
-        console.log(this.totalschedule['materials']);
+        return this.totalschedule['materials'];
     }
     /**
      *
@@ -53,10 +53,10 @@ class notifications {
         Once you execute this function, you must then execute the || remove_all_stray_ids() || function
      */
     get_batch_ids(day_data) {
-        let total_ids = [];
+        const total_ids = [];
         let temp_batch = [];
         for (let x = 0; x < day_data.length; x++) {
-            if (x == day_data.length - 1) {
+            if (x === day_data.length - 1) {
                 total_ids.push(this.remove_duplicates(temp_batch));
                 total_ids.push([day_data[x].id]);
                 break;
@@ -67,7 +67,7 @@ class notifications {
                     temp_batch.push(day_data[x + 1].id);
                 }
                 else {
-                    if (temp_batch.length == 0) {
+                    if (temp_batch.length === 0) {
                         temp_batch.push(day_data[x].id);
                     }
                     total_ids.push(this.remove_duplicates(temp_batch));
@@ -127,8 +127,8 @@ class notifications {
         ]
     }
      */
-    get_batch_for_entireschedule(sch) {
-        let ids_by_day = {
+    get_batch_for_entireschedule() {
+        const ids_by_day = {
             Monday: [],
             Tuesday: [],
             Wednesday: [],
@@ -137,7 +137,8 @@ class notifications {
             Saturday: [],
             Sunday: []
         };
-        for (let key in sch) {
+        const sch = this.getschedule();
+        for (const key in sch) {
             if (sch.hasOwnProperty(key)) {
                 const day_data = sch[key];
                 ids_by_day[key] = this.remove_empty_arrays(this.get_batch_ids(day_data));
@@ -171,7 +172,7 @@ class notifications {
         }
      */
     remove_all_stray_ids(ids_by_day) {
-        for (let key in ids_by_day) {
+        for (const key in ids_by_day) {
             const hello = ids_by_day[key];
             ids_by_day[key] = this.remove_last_element_from_next_to_last_list(hello);
         }

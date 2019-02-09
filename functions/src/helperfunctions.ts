@@ -4,16 +4,8 @@
      ========================================================================================================
      */
 
-export function conv_to_query(strToConvert:string): string{
-    let newstr:string = ""
-    for (let i:number=0; i< strToConvert.length; i++){
-      if(strToConvert[i] === " "){
-        newstr += "+"
-      }else{
-        newstr+=strToConvert[i]
-      }
-    }
-    return newstr;
+export function conv_to_query(str:string){
+   return str.replace(/ /g,'+')
 }
 export function change_from_epoch_to_hour(epoch:number){
     const currentDay = new Date(epoch*1000);
@@ -111,15 +103,7 @@ export function generateUserId(id_length,alphabetInclude_flag, capital_letters_f
     return result;
 }
 export function lastSyncDateTime():string{
-    const currentdate = new Date(); 
-    const datetime = "Last Sync: " + currentdate.getDate() + "/"
-                    + (currentdate.getMonth()+1)  + "/" 
-                    + currentdate.getFullYear() + " @ "  
-                    + currentdate.getHours() + ":"  
-                    + currentdate.getMinutes() + ":" 
-                    + currentdate.getSeconds();
-                    
-    return datetime;
+    return "" + Date.now();
 }
 export function change_time_to_decimal(hours, minutes){
    const hour = parseInt(hours.toString());

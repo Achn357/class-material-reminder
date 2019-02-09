@@ -5,17 +5,8 @@
      ========================================================================================================
      */
 Object.defineProperty(exports, "__esModule", { value: true });
-function conv_to_query(strToConvert) {
-    let newstr = "";
-    for (let i = 0; i < strToConvert.length; i++) {
-        if (strToConvert[i] === " ") {
-            newstr += "+";
-        }
-        else {
-            newstr += strToConvert[i];
-        }
-    }
-    return newstr;
+function conv_to_query(str) {
+    return str.replace(/ /g, '+');
 }
 exports.conv_to_query = conv_to_query;
 function change_from_epoch_to_hour(epoch) {
@@ -101,14 +92,7 @@ function generateUserId(id_length, alphabetInclude_flag, capital_letters_flag) {
 }
 exports.generateUserId = generateUserId;
 function lastSyncDateTime() {
-    const currentdate = new Date();
-    const datetime = "Last Sync: " + currentdate.getDate() + "/"
-        + (currentdate.getMonth() + 1) + "/"
-        + currentdate.getFullYear() + " @ "
-        + currentdate.getHours() + ":"
-        + currentdate.getMinutes() + ":"
-        + currentdate.getSeconds();
-    return datetime;
+    return "" + Date.now();
 }
 exports.lastSyncDateTime = lastSyncDateTime;
 function change_time_to_decimal(hours, minutes) {
