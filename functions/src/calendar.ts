@@ -1,8 +1,7 @@
 const fs = require('fs');
 const readline = require('readline');
 const { google } = require('googleapis');
-import * as fetch from 'node-fetch';
-
+/*
 export class calendarWrapper {
   private readonly SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
   private authorization;
@@ -31,7 +30,7 @@ export class calendarWrapper {
       redirect_uris:["urn:ietf:wg:oauth:2.0:oob","http://localhost"]}}
 
       const {client_secret, client_id, redirect_uris} = credentials.installed;
-      let oAuth2Client = new google.auth.OAuth2(
+      const oAuth2Client = new google.auth.OAuth2(
        client_id, client_secret, redirect_uris[0]);
       
 
@@ -81,6 +80,8 @@ export class calendarWrapper {
    * execute the given callback with the authorized OAuth2 client.
    * @param {google.auth.OAuth2} oAuth2Client The OAuth2 client to get token for.
    */
+
+  /*
   private getAccessToken(oAuth2Client) {
     const authUrl = oAuth2Client.generateAuthUrl({
       access_type: 'offline',
@@ -109,7 +110,7 @@ export class calendarWrapper {
   }
 
   public getNextWeekEventData(callback) {
-    let auth = this.authorization;
+    const auth = this.authorization;
     const calendar = google.calendar({ version: 'v3', auth });
     const week_epoch = 604800000; //amount of milliseconds in a week
     calendar.events.list({
@@ -127,3 +128,5 @@ export class calendarWrapper {
   }
 
 }
+
+*/

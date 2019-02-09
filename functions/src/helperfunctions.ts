@@ -103,15 +103,7 @@ export function generateUserId(id_length,alphabetInclude_flag, capital_letters_f
     return result;
 }
 export function lastSyncDateTime():string{
-    const currentdate = new Date(); 
-    const datetime = "Last Sync: " + currentdate.getDate() + "/"
-                    + (currentdate.getMonth()+1)  + "/" 
-                    + currentdate.getFullYear() + " @ "  
-                    + currentdate.getHours() + ":"  
-                    + currentdate.getMinutes() + ":" 
-                    + currentdate.getSeconds();
-                    
-    return datetime;
+    return "" + Date.now();
 }
 export function change_time_to_decimal(hours, minutes){
    const hour = parseInt(hours.toString());

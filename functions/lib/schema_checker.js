@@ -8,14 +8,14 @@ class schemaChecker {
         return this.schema;
     }
     compare_schema(checking_needed_json) {
-        let missing_keys_json = this.getSchema();
-        for (let key in checking_needed_json) {
+        const missing_keys_json = this.getSchema();
+        for (const key in checking_needed_json) {
             if (missing_keys_json.hasOwnProperty(key)) {
                 delete missing_keys_json[key];
             }
         }
-        let missing_keys = [];
-        for (let key in missing_keys_json) {
+        const missing_keys = [];
+        for (const key in missing_keys_json) {
             missing_keys.push(key);
         }
         return missing_keys;

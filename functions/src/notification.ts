@@ -1,5 +1,5 @@
 export class notifications {
-    private totalschedule: Object ={};  
+    private totalschedule: Object = {};
     //start time, end time, location, materials
     public constructor(data: Object) {
         this.totalschedule = data;
@@ -8,9 +8,9 @@ export class notifications {
      * 
      * @param a removes any duplicate values in a single array
      */
-    public remove_duplicates(a:Array<number>):Array<number> {
-        var seen = {};
-        return a.filter(function(item) {
+    public remove_duplicates(a: Array<number>): Array<number> {
+        const seen = {};
+        return a.filter(function (item) {
             return seen.hasOwnProperty(item) ? false : (seen[item] = true);
         });
     }
@@ -18,21 +18,21 @@ export class notifications {
      * 
      * @param a give 2D array of ids for a single day
      */
-    public remove_empty_arrays(a:Array<Array<number>>):Array<Array<number>>{
+    public remove_empty_arrays(a: Array<Array<number>>): Array<Array<number>> {
         return a.filter(item => item.length > 0)
     }
 
     /**
      * returns the schedule
      */
-    public getschedule(){
+    public getschedule() {
         return this.totalschedule['schedule'];
     }
     /**
      * returns the materials
      */
-    public getmaterials(){
-        console.log(this.totalschedule['materials'])
+    public getmaterials() {
+        return this.totalschedule['materials'];
     }
     /**
      * 
@@ -51,33 +51,33 @@ export class notifications {
         
         Once you execute this function, you must then execute the || remove_all_stray_ids() || function
      */
-    public get_batch_ids(day_data):Array<Array<number>>{
-        let total_ids:Array<Array<number>> = [];
-        let temp_batch:Array<number> = [];
-    
-        for(let x=0; x < day_data.length; x++){
-            if(x == day_data.length-1){
+    public get_batch_ids(day_data): Array<Array<number>> {
+        const total_ids: Array<Array<number>> = [];
+        let temp_batch: Array<number> = [];
+
+        for (let x = 0; x < day_data.length; x++) {
+            if (x === day_data.length - 1) {
                 total_ids.push(this.remove_duplicates(temp_batch))
                 total_ids.push([day_data[x].id])
                 break;
-            }else{
-                if((day_data[x+1].start - day_data[x].endtime) <= 2){
+            } else {
+                if ((day_data[x + 1].start - day_data[x].endtime) <= 2) {
                     temp_batch.push(day_data[x].id)
-                    temp_batch.push(day_data[x+1].id)
-        
-                }else{
-                    if(temp_batch.length ==0 ){
+                    temp_batch.push(day_data[x + 1].id)
+
+                } else {
+                    if (temp_batch.length === 0) {
                         temp_batch.push(day_data[x].id)
                     }
-                    
+
                     total_ids.push(this.remove_duplicates(temp_batch));
                     temp_batch = [];
-                    
-        
+
+
                 }
             }
         }
-    
+
         return this.remove_empty_arrays(total_ids);
     }
 
@@ -87,23 +87,23 @@ export class notifications {
      * @param totalarray a 2d array of numbers like so: [[1,2,3],[4,5],[5]]
      * return: [[1,2,3],[4,5]]
      */
-    public remove_last_element_from_next_to_last_list(totalarray:Array<Array<number>>):Array<Array<number>>{
-        if(totalarray.length > 1){
-            const last_number = totalarray[totalarray.length-1][0];
-            const second_to_last_list = totalarray[totalarray.length-2];
-            const second_to_last_number = second_to_last_list[second_to_last_list.length-1]
-             
-            if((last_number === second_to_last_number)){
-                totalarray.splice(-1,1);
+    public remove_last_element_from_next_to_last_list(totalarray: Array<Array<number>>): Array<Array<number>> {
+        if (totalarray.length > 1) {
+            const last_number = totalarray[totalarray.length - 1][0];
+            const second_to_last_list = totalarray[totalarray.length - 2];
+            const second_to_last_number = second_to_last_list[second_to_last_list.length - 1]
+
+            if ((last_number === second_to_last_number)) {
+                totalarray.splice(-1, 1);
                 return totalarray
-        
-            }else{
+
+            } else {
                 return totalarray;
             }
-        }else{
+        } else {
             return totalarray;
         }
-        
+
     }
 
     /**
@@ -133,28 +133,28 @@ export class notifications {
         ]
     }
      */
-    public get_batch_for_entireschedule(sch){
-        let ids_by_day = {
-            Monday:[],
-            Tuesday:[],
-            Wednesday:[],
-            Thursday:[],
-            Friday:[],
-            Saturday:[],
-            Sunday:[]
+    public get_batch_for_entireschedule() {
+        const ids_by_day = {
+            Monday: [],
+            Tuesday: [],
+            Wednesday: [],
+            Thursday: [],
+            Friday: [],
+            Saturday: [],
+            Sunday: []
         }
-        
-        for(let key in sch){
-            if(sch.hasOwnProperty(key)){
+        const sch = this.getschedule()
+        for (const key in sch) {
+            if (sch.hasOwnProperty(key)) {
                 const day_data = sch[key];
-        
+
                 ids_by_day[key] = this.remove_empty_arrays(this.get_batch_ids(day_data));
-                
+
             }
-        
+
         }
         return this.remove_all_stray_ids(ids_by_day);
-    
+
     }
 
 
@@ -183,16 +183,16 @@ export class notifications {
         Sunday: [ [ 367814, 835217 ], [ 472938 ] ] 
         }
      */
-    public remove_all_stray_ids(ids_by_day):Object{
-        for(let key in ids_by_day){
+    public remove_all_stray_ids(ids_by_day): Object {
+        for (const key in ids_by_day) {
             const hello = ids_by_day[key]
-            
+
             ids_by_day[key] = this.remove_last_element_from_next_to_last_list(hello);
-            
+
         }
-    
+
         return ids_by_day;
     }
-    
+
 }
 
