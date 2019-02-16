@@ -4,11 +4,9 @@ import * as admin from 'firebase-admin';
 import * as hp from './helperfunctions';
 import {schemaChecker} from './schema_checker';
 import * as fetch from 'node-fetch';
-import { weather } from './weather';
 
 admin.initializeApp(config)
 const firestore = admin.firestore();
-
 
 class User {
   private locationkey;
@@ -123,7 +121,7 @@ export const addWeatherBoilerPlate = functions.firestore
                     }).catch();
 })
 
-export const addLocationkey = functions.runWith({memory:'2GB'}).firestore
+export const add12weather = functions.runWith({memory:'2GB'}).firestore
     .document('weather/{uid}')
     .onCreate(async (snap,context) => {
       
@@ -154,7 +152,7 @@ export const addLocationkey = functions.runWith({memory:'2GB'}).firestore
               });
           }
           for(const x of forecasts_12hour){
-              const epochtime = hp.adjust_Epoch_To_Time_Zone(x.EpochDateTime,user.getGmtOffset());
+              const epochtime:number = hp.adjust_Epoch_To_Time_Zone(x.EpochDateTime,user.getGmtOffset());
               const day = hp.change_from_epoch_to_day(epochtime);
               const currenthour = hp.change_from_epoch_to_hour(epochtime);
               const event_id = hp.generateUserId(10,1,1);
@@ -179,59 +177,7 @@ export const addLocationkey = functions.runWith({memory:'2GB'}).firestore
 
       return Promise.all([a,b]).catch(err => console.log('Oops something went wrong in promise.all' + err))
 })
-/*
-export const add12weather = functions.runWith({memory:'2GB'}).firestore
-    .document('weather/{uid}')
-    .onUpdate(async (change,context) => {
 
-        const data = change.after.data();
-        const uid = data.uid;
-        const locationkey = data.locationkey;
-        const gmtOffset = data.gmtOffset;
-        const docRef = firestore.collection('weather').doc(uid);
-        
-        return await fetch(`http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/${locationkey}?apikey=HGJe79DbnxNn9DRNEDiH19CNYBXg0Tdy`)
-        .then(response => response.json())
-        .then(json => {
-            const forecasts_12hour: Array<any> = [];
-            for (const i of json) {
-                forecasts_12hour.push({
-                    DateTime: i.DateTime + "",
-                    EpochDateTime: i.EpochDateTime + "",
-                    WeatherIcon: i.WeatherIcon + "",
-                    IconPhrase: i.IconPhrase + "",
-                    Temperature_Value: i.Temperature.Value + "",
-                    Temperature_Units: i.Temperature.Unit + "",
-                    PrecipitationProbability: i.PrecipitationProbability + ""
-                });
-            }
-            for(const x of forecasts_12hour){
-                const epochtime = hp.adjust_Epoch_To_Time_Zone(x.EpochDateTime,gmtOffset);
-                const day = hp.change_from_epoch_to_day(epochtime);
-                const currenthour = hp.change_from_epoch_to_hour(epochtime);
-                const event_id = hp.generateUserId(10,1,1);
-    
-                docRef.collection(`${day}`).doc(`${event_id}`).set({
-                    id:event_id,
-                    epoch:epochtime,
-                    day:day,
-                    name:`${day}'s weather at ${currenthour}`,
-                    start:currenthour,
-                    finish:currenthour+1,
-                    temperature:x.Temperature_Value,
-                    units:x.Temperature_Units,
-                    weathericon:x.WeatherIcon,
-                    precipitation:x.PrecipitationProbability,
-                    phrase:x.IconPhrase
-                })
-                .catch(err => console.log("Something went wrong with adding hourly data to schedule. Error details: " + err))
-            }
-        })
-        .catch(err => console.log('Oops something went wrong' + err))
-
-        //======================== setting 12 hour weather to firebase ================================//        
-})
-*/
 
 export const deleteUser = functions.https.onRequest((req,res) => {
   const uid = req.body.uid
@@ -268,45 +214,4 @@ export const deleteUserSchedule = functions.runWith({
 })
 
 
-/*
-export const deleteUserWeather = functions.runWith({
-    timeoutSeconds: 540,
-    memory: '2GB'
-  }).firestore
-    .document('users/{uid}')
-    .onDelete(async (data,context) => {
     
-    // implement after authentication
-    if (!(context.auth && context.auth.token && context.auth.token.admin)) {
-      throw new functions.https.HttpsError(
-        'permission-denied',
-        'Must be an administrative user to initiate delete.'
-      );
-    }
-        
-    const path = data.path;
-    console.log(
-      `User ${context.auth.uid} has requested to delete path ${path}`
-    );
-
-    // Run a recursive delete on the given document or collection path.
-    // The 'token' must be set in the functions config, and can be generated
-    // at the command line by running 'firebase login:ci'.
-    return firebase_tools.firestore
-      .delete(path, {
-        project: process.env.GCLOUD_PROJECT,
-        recursive: true,
-        yes: true,
-        token: functions.config().fb.token
-      })
-      .then(() => {
-        return {
-          path: path
-        };
-      });
-        
-        
-        const uid = snap.data().uid;
-        return firestore.collection('weather').doc(uid).delete()
-                .catch(err => console.log(err)) 
-    }) */

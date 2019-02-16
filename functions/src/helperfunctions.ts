@@ -13,7 +13,7 @@ export function change_from_epoch_to_hour(epoch:number){
     return currentDay.getHours()
 }
 //This function accepts an epoch time number and returns the current day of the week (Monday. Tuesday, etc.)
-export function change_from_epoch_to_day(epoch:number):string{
+export function change_from_epoch_to_day(epoch:number){
     const currentDay = new Date(epoch*1000);
 
     const days = {
@@ -83,8 +83,8 @@ export function useWeatherCode(iconNumber){
    
     return 'Snow is in the forecast! Grab a rain/snow jacket before you leave the house.';
 }
-export function adjust_Epoch_To_Time_Zone(epochtime:number, offset:string):number{
-    return epochtime + parseInt(offset)*3600
+export function adjust_Epoch_To_Time_Zone(epochtime:string, offset:string):number{
+    return parseInt(epochtime) + parseInt(offset)*3600
 }
 export function get_hanging_minutes_of_epoch(epochtime:number):string{
    const d = new Date(epochtime*1000);

@@ -70,7 +70,7 @@ function useWeatherCode(iconNumber) {
 }
 exports.useWeatherCode = useWeatherCode;
 function adjust_Epoch_To_Time_Zone(epochtime, offset) {
-    return epochtime + parseInt(offset) * 3600;
+    return parseInt(epochtime) + parseInt(offset) * 3600;
 }
 exports.adjust_Epoch_To_Time_Zone = adjust_Epoch_To_Time_Zone;
 function get_hanging_minutes_of_epoch(epochtime) {
