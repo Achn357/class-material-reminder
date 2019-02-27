@@ -43,8 +43,17 @@ var config = {
   };
 ```   
 Copy just that part and paste it into `index.ts`   
-10) While you are on the firebase console, on the left-hand bar click database. 
-11) Now we need to initialize `admin` with that config. To do that type this in: `admin.initializeApp(config)`. 
+10) While you are on the firebase console, on the left-hand bar click database. Then click `Create Database`. After a while a dialog box
+should pop up asking to start the database in `locked mode` or `test mode`. Click `test mode`. 
+11) Back in `index.ts` we need to initialize `admin` with that `config`. To do that type this in: `admin.initializeApp(config)`. 
 12) Next let us make a database variable called `firestore` and set it equal to `admin.firestore()`. The code should look like this:   
 `const firestore = admin.firestore();`   
-13) Finally lets write something to our database
+13) Finally lets write something to our database. Firestore works by a system called collections and documents. Collections are like folders and documents are like inividual files. Each file has information in it. Paste the following code in :   
+```
+const data = {state:"Illinois",country:"United States of America",gdp:"800 Billion"};
+firestore.collection('cities').doc('Chicago').set(data)
+```   
+Basically I have a bunch of data and I want to add that to my database. So in my `cities` **collection** in the `Chicago` **document** I write information stored in the variable called `data`. **By the way** if a collection or document doesn't exist in the Firestore database, it will automatically make those collections or documents. So basically I am making a new **collection** called `cities` and a new **document** called `Chicago` and I am writing data to it.   
+
+14) Now lets run code. In your command line -- **MAKE SURE YOU ARE IN THE FOLDER YOU PUT INDEX.TS IN. If not 'cd' into it** -- type in `tsc`. This will compile our *tyepscript* file into a *javascript* file. Then type in `node inedx.js`.   
+15) Go to the firebase console. Then click on database on the left sidebar and then you will see the data you just added. Feel free to add more data of your choice. Try experimenting
