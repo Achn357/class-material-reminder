@@ -19,9 +19,12 @@
     "node-fetch": "^2.2.0"
   },
   "devDependencies": {
+    "@google-cloud/pubsub": "^0.24.1",
     "tslint": "~5.8.0",
     "typescript": "~2.8.3"
   },
-  "engines":{"node":"8"},
+  "engines": {
+    "node": "8"
+  },
   "private": true
 }

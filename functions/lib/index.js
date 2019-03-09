@@ -6,6 +6,7 @@ const admin = require("firebase-admin");
 const hp = require("./helperfunctions");
 const schema_checker_1 = require("./schema_checker");
 const fetch = require("node-fetch");
+const firebase_tools = require("firebase-tools");
 admin.initializeApp(env_1.config);
 const firestore = admin.firestore();
 class User {
@@ -97,7 +98,7 @@ exports.addWeatherBoilerPlate = functions.firestore
         });
     }).catch();
 });
-exports.addLocationkey = functions.runWith({ memory: '2GB' }).firestore
+exports.add12weather = functions.runWith({ memory: '2GB' }).firestore
     .document('weather/{uid}')
     .onCreate(async (snap, context) => {
     const zipcode = snap.data().zipcode;
@@ -147,59 +148,6 @@ exports.addLocationkey = functions.runWith({ memory: '2GB' }).firestore
         .catch(err => console.log('Oops something went wrong with fetching weather' + err));
     return Promise.all([a, b]).catch(err => console.log('Oops something went wrong in promise.all' + err));
 });
-/*
-export const add12weather = functions.runWith({memory:'2GB'}).firestore
-    .document('weather/{uid}')
-    .onUpdate(async (change,context) => {
-
-        const data = change.after.data();
-        const uid = data.uid;
-        const locationkey = data.locationkey;
-        const gmtOffset = data.gmtOffset;
-        const docRef = firestore.collection('weather').doc(uid);
-        
-        return await fetch(`http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/${locationkey}?apikey=HGJe79DbnxNn9DRNEDiH19CNYBXg0Tdy`)
-        .then(response => response.json())
-        .then(json => {
-            const forecasts_12hour: Array<any> = [];
-            for (const i of json) {
-                forecasts_12hour.push({
-                    DateTime: i.DateTime + "",
-                    EpochDateTime: i.EpochDateTime + "",
-                    WeatherIcon: i.WeatherIcon + "",
-                    IconPhrase: i.IconPhrase + "",
-                    Temperature_Value: i.Temperature.Value + "",
-                    Temperature_Units: i.Temperature.Unit + "",
-                    PrecipitationProbability: i.PrecipitationProbability + ""
-                });
-            }
-            for(const x of forecasts_12hour){
-                const epochtime = hp.adjust_Epoch_To_Time_Zone(x.EpochDateTime,gmtOffset);
-                const day = hp.change_from_epoch_to_day(epochtime);
-                const currenthour = hp.change_from_epoch_to_hour(epochtime);
-                const event_id = hp.generateUserId(10,1,1);
-    
-                docRef.collection(`${day}`).doc(`${event_id}`).set({
-                    id:event_id,
-                    epoch:epochtime,
-                    day:day,
-                    name:`${day}'s weather at ${currenthour}`,
-                    start:currenthour,
-                    finish:currenthour+1,
-                    temperature:x.Temperature_Value,
-                    units:x.Temperature_Units,
-                    weathericon:x.WeatherIcon,
-                    precipitation:x.PrecipitationProbability,
-                    phrase:x.IconPhrase
-                })
-                .catch(err => console.log("Something went wrong with adding hourly data to schedule. Error details: " + err))
-            }
-        })
-        .catch(err => console.log('Oops something went wrong' + err))
-
-        //======================== setting 12 hour weather to firebase ================================//
-})
-*/
 exports.deleteUser = functions.https.onRequest((req, res) => {
     const uid = req.body.uid;
     firestore.collection('users').doc(uid).delete()
@@ -217,8 +165,23 @@ exports.deleteUserMaterials = functions.runWith({
     .document('users/{uid}')
     .onDelete(async (snap, context) => {
     const uid = snap.data().uid;
-    return firestore.collection('materials').doc(uid).delete()
-        .catch(err => console.log(err));
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    days.forEach(day => {
+        const path = `materials/${uid}/${day}`;
+        firebase_tools.firestore
+            .delete(path, {
+            project: process.env.GCLOUD_PROJECT,
+            recursive: true,
+            yes: true,
+            token: '1/pKmSZs_GWKB1wNYNMPVRyyeQVK-pT002F3aonOw2oq00uMf5QeeEFEAy1K0Gl2oS'
+        })
+            .then(() => {
+            return {
+                path: path
+            };
+        });
+    });
+    return firestore.collection('materials').doc(uid).delete().then(ref => console.log("deleted user" + uid + "materials")).catch(err => console.log(err));
 });
 exports.deleteUserSchedule = functions.runWith({
     timeoutSeconds: 540,
@@ -227,49 +190,48 @@ exports.deleteUserSchedule = functions.runWith({
     .document('users/{uid}')
     .onDelete(async (snap, context) => {
     const uid = snap.data().uid;
-    return firestore.collection('schedule').doc(uid).delete()
-        .catch(err => console.log(err));
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    days.forEach(day => {
+        const path = `schedule/${uid}/${day}`;
+        firebase_tools.firestore
+            .delete(path, {
+            project: process.env.GCLOUD_PROJECT,
+            recursive: true,
+            yes: true,
+            token: '1/pKmSZs_GWKB1wNYNMPVRyyeQVK-pT002F3aonOw2oq00uMf5QeeEFEAy1K0Gl2oS'
+        })
+            .then(() => {
+            return {
+                path: path
+            };
+        });
+    });
+    return firestore.collection('schedule').doc(uid).delete().then(ref => console.log("deleted user" + uid + "schedule")).catch(err => console.log(err));
 });
-/*
-export const deleteUserWeather = functions.runWith({
+exports.deleteUserWeather = functions.runWith({
     timeoutSeconds: 540,
     memory: '2GB'
-  }).firestore
+}).firestore
     .document('users/{uid}')
-    .onDelete(async (data,context) => {
-    
-    // implement after authentication
-    if (!(context.auth && context.auth.token && context.auth.token.admin)) {
-      throw new functions.https.HttpsError(
-        'permission-denied',
-        'Must be an administrative user to initiate delete.'
-      );
-    }
-        
-    const path = data.path;
-    console.log(
-      `User ${context.auth.uid} has requested to delete path ${path}`
-    );
-
-    // Run a recursive delete on the given document or collection path.
-    // The 'token' must be set in the functions config, and can be generated
-    // at the command line by running 'firebase login:ci'.
-    return firebase_tools.firestore
-      .delete(path, {
-        project: process.env.GCLOUD_PROJECT,
-        recursive: true,
-        yes: true,
-        token: functions.config().fb.token
-      })
-      .then(() => {
-        return {
-          path: path
-        };
-      });
-        
-        
-        const uid = snap.data().uid;
-        return firestore.collection('weather').doc(uid).delete()
-                .catch(err => console.log(err))
-    }) */
+    .onDelete(async (snap, context) => {
+    const uid = snap.data().uid;
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    days.forEach(day => {
+        const path = `weather/${uid}/${day}`;
+        firebase_tools.firestore
+            .delete(path, {
+            project: process.env.GCLOUD_PROJECT,
+            recursive: true,
+            yes: true,
+            token: '1/pKmSZs_GWKB1wNYNMPVRyyeQVK-pT002F3aonOw2oq00uMf5QeeEFEAy1K0Gl2oS'
+        })
+            .then(() => {
+            return {
+                path: path
+            };
+        });
+    });
+    return firestore.collection('weather').doc(uid).delete().then(ref => console.log("deleted user" + uid + "weather")).catch(err => console.log(err));
+});
+//1/pKmSZs_GWKB1wNYNMPVRyyeQVK-pT002F3aonOw2oq00uMf5QeeEFEAy1K0Gl2oS
 //# sourceMappingURL=index.js.map
