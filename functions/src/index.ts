@@ -5,6 +5,7 @@ import * as hp from './helperfunctions';
 import {schemaChecker} from './schema_checker';
 import * as fetch from 'node-fetch';
 import * as firebase_tools from 'firebase-tools';
+import * as pubsub from './pubsub';
 
 admin.initializeApp(config)
 const firestore = admin.firestore();
@@ -179,7 +180,6 @@ export const add12weather = functions.runWith({memory:'2GB'}).firestore
       return Promise.all([a,b]).catch(err => console.log('Oops something went wrong in promise.all' + err))
 })
 
-
 export const deleteUser = functions.https.onRequest((req,res) => {
   const uid = req.body.uid
   firestore.collection('users').doc(uid).delete()
@@ -219,8 +219,7 @@ export const deleteUserMaterials = functions.runWith({
 
       return firestore.collection('materials').doc(uid).delete().then(ref =>  console.log("deleted user" + uid + "materials")).catch(err =>  console.log(err))
       
-    })
-
+})
 
 export const deleteUserSchedule = functions.runWith({
     timeoutSeconds: 540,
@@ -283,5 +282,3 @@ export const deleteUserWeather = functions.runWith({
     
       
 })
-
-    
