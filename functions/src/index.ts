@@ -6,6 +6,7 @@ import {schemaChecker} from './schema_checker';
 import * as fetch from 'node-fetch';
 import * as firebase_tools from 'firebase-tools';
 import * as pubsub from './pubsub';
+import * as calendar from './calendar';
 
 admin.initializeApp(config)
 const firestore = admin.firestore();
@@ -281,6 +282,23 @@ export const deleteUserWeather = functions.runWith({
     return firestore.collection('weather').doc(uid).delete().then(ref =>  console.log("deleted user" + uid + "weather")).catch(err =>  console.log(err))
     
       
+})
+
+export const getCalendarEvents = functions.https.onRequest((request, response) => {
+  const correct_schema = {calendarLocation:""};
+  const sch = new schemaChecker(correct_schema);
+  const check = sch.compare_schema(request.body)
+  
+  if(check.length > 0){
+      let totalstring ="";
+      const ele:string[] = [];
+      check.forEach(element => {totalstring += element + ","; ele.push(element)});
+      response.status(501).send({status:0,message:totalstring + "is missing from the request body", elements:ele});
+  }
+
+  calendar.detectText(request.body.calendarLocation, (parsedData) => {
+    response.send({status:1, message: `user calendar parsed for events`, parsedEvents: parsedData})
+  })
 })
 
 
