@@ -1,6 +1,5 @@
 node_modules
 .DS_Store
-README.md 
 .firebase
 firebase.json
 enviornment

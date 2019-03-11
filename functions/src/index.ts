@@ -1,9 +1,11 @@
-import {config} from './enviornment/env'
+import {config, firebase_recursive_token} from './enviornment/env'
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import * as hp from './helperfunctions';
 import {schemaChecker} from './schema_checker';
 import * as fetch from 'node-fetch';
+import * as firebase_tools from 'firebase-tools';
+import * as pubsub from './pubsub';
 
 admin.initializeApp(config)
 const firestore = admin.firestore();
@@ -178,7 +180,6 @@ export const add12weather = functions.runWith({memory:'2GB'}).firestore
       return Promise.all([a,b]).catch(err => console.log('Oops something went wrong in promise.all' + err))
 })
 
-
 export const deleteUser = functions.https.onRequest((req,res) => {
   const uid = req.body.uid
   firestore.collection('users').doc(uid).delete()
@@ -196,22 +197,90 @@ export const deleteUserMaterials = functions.runWith({
   }).firestore
     .document('users/{uid}')
     .onDelete(async (snap,context) => {
-        const uid = snap.data().uid;
-        return firestore.collection('materials').doc(uid).delete()
-                .catch(err => console.log(err))
-    })
 
+      const uid = snap.data().uid;
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      days.forEach(day => {
+        const path = `materials/${uid}/${day}`;
+      
+        firebase_tools.firestore
+        .delete(path, {
+          project: process.env.GCLOUD_PROJECT,
+          recursive: true,
+          yes: true,
+          token: firebase_recursive_token
+        })
+        .then(() => {
+          return {
+            path: path
+          };
+        });
+      });
+
+      return firestore.collection('materials').doc(uid).delete().then(ref =>  console.log("deleted user" + uid + "materials")).catch(err =>  console.log(err))
+      
+})
 
 export const deleteUserSchedule = functions.runWith({
     timeoutSeconds: 540,
     memory: '2GB'
   }).firestore
-.document('users/{uid}')
-.onDelete(async (snap,context) => {
+    .document('users/{uid}')
+    .onDelete(async (snap,context) => {
+
+      const uid = snap.data().uid;
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      days.forEach(day => {
+        const path = `schedule/${uid}/${day}`;
+      
+        firebase_tools.firestore
+        .delete(path, {
+          project: process.env.GCLOUD_PROJECT,
+          recursive: true,
+          yes: true,
+          token: firebase_recursive_token
+        })
+        .then(() => {
+          return {
+            path: path
+          };
+        });
+      });
+
+      return firestore.collection('schedule').doc(uid).delete().then(ref =>  console.log("deleted user" + uid + "schedule")).catch(err =>  console.log(err))
+      
+        
+})
+
+export const deleteUserWeather = functions.runWith({
+  timeoutSeconds: 540,
+  memory: '2GB'
+}).firestore
+  .document('users/{uid}')
+  .onDelete(async (snap,context) => {
+
     const uid = snap.data().uid;
-    return firestore.collection('schedule').doc(uid).delete()
-            .catch(err => console.log(err))
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    days.forEach(day => {
+      const path = `weather/${uid}/${day}`;
+    
+      firebase_tools.firestore
+      .delete(path, {
+        project: process.env.GCLOUD_PROJECT,
+        recursive: true,
+        yes: true,
+        token: firebase_recursive_token
+      })
+      .then(() => {
+        return {
+          path: path
+        };
+      });
+    });
+
+    return firestore.collection('weather').doc(uid).delete().then(ref =>  console.log("deleted user" + uid + "weather")).catch(err =>  console.log(err))
+    
+      
 })
 
 
-    
