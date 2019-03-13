@@ -2,7 +2,7 @@
      ========================================================================================================
      ========================================   HELPER FUNCTIONS    =========================================
      ========================================================================================================
-     */
+*/
 
 export function conv_to_query(str:string){
    return str.replace(/ /g,'+')
@@ -109,4 +109,26 @@ export function change_time_to_decimal(hours, minutes){
    const hour = parseInt(hours.toString());
    const min = parseInt(minutes);
    return hour + (min)/60;
+}
+
+export function weatherClearAndSort(forecasts_12hour){
+   let threshold;
+
+   if(forecasts_12hour[0].Temperature_Units === 'F')
+       threshold = 15;
+   else
+       threshold = 5;
+   
+   let temperature = parseInt(forecasts_12hour[0].Temperature_Value);
+   const newWeatherArray = [forecasts_12hour[0]];
+
+   forecasts_12hour.forEach(element => {
+       const currentTemp = parseInt(element.Temperature_Value)
+       if(Math.abs(currentTemp - temperature) >= threshold) {
+           temperature = currentTemp;
+           newWeatherArray.push(element);
+       }
+   });
+
+   return newWeatherArray;
 }

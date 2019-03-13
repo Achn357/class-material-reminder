@@ -9,20 +9,7 @@ const fetch = require("node-fetch");
 const firebase_tools = require("firebase-tools");
 admin.initializeApp(env_1.config);
 const firestore = admin.firestore();
-class User {
-    getLocationKey() {
-        return this.locationkey;
-    }
-    setLocationKey(loc) {
-        this.locationkey = loc;
-    }
-    getGmtOffset() {
-        return this.gmtoffset;
-    }
-    setGmtOffset(gmt) {
-        this.gmtoffset = gmt;
-    }
-}
+const user_1 = require("./user");
 exports.addUser = functions.runWith({ memory: '1GB' }).https.onRequest(async (request, response) => {
     const correct_schema = { firstname: "", lastname: "", location: "", zipcode: "", email: "" };
     const sch = new schema_checker_1.schemaChecker(correct_schema);
@@ -103,16 +90,22 @@ exports.add12weather = functions.runWith({ memory: '2GB' }).firestore
     .onCreate(async (snap, context) => {
     const zipcode = snap.data().zipcode;
     const uid = snap.data().uid;
-    const url = `http://dataservice.accuweather.com/locations/v1/postalcodes/US/search?apikey=HGJe79DbnxNn9DRNEDiH19CNYBXg0Tdy&q=${zipcode}`;
-    const user = new User();
+    const url = `http://dataservice.accuweather.com/locations/v1/postalcodes/US/search?apikey=${env_1.AccuWeatherApiKey}&q=${zipcode}`;
+    const user = new user_1.User();
+    //getting the locationkey
     await fetch(url).then(data => data.json()).then(data => { user.setLocationKey(data[0].Key); user.setGmtOffset(data[0].TimeZone.GmtOffset); });
+    //adding locationkey to the user weather document
     const a = firestore.collection('weather').doc(uid)
         .update({ locationkey: user.getLocationKey(), gmtOffset: user.getGmtOffset() })
         .catch(err => console.log(err));
-    const b = fetch(`http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/${user.getLocationKey()}?apikey=HGJe79DbnxNn9DRNEDiH19CNYBXg0Tdy`)
+    //getting the 12 hour weather and then adding it to the user weather collection
+    const b = fetch(`http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/${user.getLocationKey()}?apikey=${env_1.AccuWeatherApiKey}`)
         .then(response => response.json())
         .then(json => {
-        const forecasts_12hour = [];
+        let forecasts_12hour = [];
+        // clearing the crap from the json data from accuweather. Then I am pushing each 
+        //weather object to the forecasts_12hour array. 
+        //this will later be push to firestore in  the the second for loop below
         for (const i of json) {
             forecasts_12hour.push({
                 DateTime: i.DateTime + "",
@@ -124,6 +117,19 @@ exports.add12weather = functions.runWith({ memory: '2GB' }).firestore
                 PrecipitationProbability: i.PrecipitationProbability + ""
             });
         }
+        // clear and sorting to make sure we are only writing important weather events to database
+        //aka only massive weather swings
+        forecasts_12hour = hp.weatherClearAndSort(forecasts_12hour);
+        /*
+        taking the weather objects from forecasts_12hour and pushing each object onto firestore
+        before doing that though, I need to figure out which day I should put it under since
+        the times given in each weather object is in Epoch Time. So I have to first convert
+        the standard epoch time(meaning this is still in GMT timezone) to the user's timezone
+        then with the ajdusted time zone I make the 'day, currenthour, and event_id' variables
+        I also create an event_id variable to give each weather object an id
+        from there it's pretty simple, I just literally set each weather object to
+        the path of weather/{uid}/{day}/{eventid}
+        */
         for (const x of forecasts_12hour) {
             const epochtime = hp.adjust_Epoch_To_Time_Zone(x.EpochDateTime, user.getGmtOffset());
             const day = hp.change_from_epoch_to_day(epochtime);
@@ -133,7 +139,6 @@ exports.add12weather = functions.runWith({ memory: '2GB' }).firestore
                 id: event_id,
                 epoch: epochtime,
                 day: day,
-                name: `${day}'s weather at ${currenthour}`,
                 start: currenthour,
                 finish: currenthour + 1,
                 temperature: x.Temperature_Value,
@@ -173,7 +178,7 @@ exports.deleteUserMaterials = functions.runWith({
             project: process.env.GCLOUD_PROJECT,
             recursive: true,
             yes: true,
-            token: '1/pKmSZs_GWKB1wNYNMPVRyyeQVK-pT002F3aonOw2oq00uMf5QeeEFEAy1K0Gl2oS'
+            token: env_1.firebase_recursive_token
         })
             .then(() => {
             return {
@@ -198,7 +203,7 @@ exports.deleteUserSchedule = functions.runWith({
             project: process.env.GCLOUD_PROJECT,
             recursive: true,
             yes: true,
-            token: '1/pKmSZs_GWKB1wNYNMPVRyyeQVK-pT002F3aonOw2oq00uMf5QeeEFEAy1K0Gl2oS'
+            token: env_1.firebase_recursive_token
         })
             .then(() => {
             return {
@@ -223,7 +228,7 @@ exports.deleteUserWeather = functions.runWith({
             project: process.env.GCLOUD_PROJECT,
             recursive: true,
             yes: true,
-            token: '1/pKmSZs_GWKB1wNYNMPVRyyeQVK-pT002F3aonOw2oq00uMf5QeeEFEAy1K0Gl2oS'
+            token: env_1.firebase_recursive_token
         })
             .then(() => {
             return {
@@ -233,5 +238,18 @@ exports.deleteUserWeather = functions.runWith({
     });
     return firestore.collection('weather').doc(uid).delete().then(ref => console.log("deleted user" + uid + "weather")).catch(err => console.log(err));
 });
-//1/pKmSZs_GWKB1wNYNMPVRyyeQVK-pT002F3aonOw2oq00uMf5QeeEFEAy1K0Gl2oS
+exports.onStorageUpload = functions.storage.object().onFinalize(async (snap, context) => {
+    const Imagename = snap.name; //the image name should be named as the uid
+    const Timestamp = context.timestamp;
+    const FilePath = snap.id;
+    return await firestore.collection('storagePairings').doc(Imagename).set({
+        name: Imagename,
+        timestamp: Timestamp,
+        filePath: FilePath,
+        acl: snap.acl,
+        etag: snap.etag,
+        generation: snap.generation,
+        owner: snap.owner
+    }).catch(err => console.log(`Error in trying to pair upload information. Cloud Function: onStorageUpload. Error: ${err}`));
+});
 //# sourceMappingURL=index.js.map

@@ -3,7 +3,7 @@
      ========================================================================================================
      ========================================   HELPER FUNCTIONS    =========================================
      ========================================================================================================
-     */
+*/
 Object.defineProperty(exports, "__esModule", { value: true });
 function conv_to_query(str) {
     return str.replace(/ /g, '+');
@@ -101,4 +101,22 @@ function change_time_to_decimal(hours, minutes) {
     return hour + (min) / 60;
 }
 exports.change_time_to_decimal = change_time_to_decimal;
+function weatherClearAndSort(forecasts_12hour) {
+    let threshold;
+    if (forecasts_12hour[0].Temperature_Units === 'F')
+        threshold = 15;
+    else
+        threshold = 5;
+    let temperature = parseInt(forecasts_12hour[0].Temperature_Value);
+    const newWeatherArray = [forecasts_12hour[0]];
+    forecasts_12hour.forEach(element => {
+        const currentTemp = parseInt(element.Temperature_Value);
+        if (Math.abs(currentTemp - temperature) >= threshold) {
+            temperature = currentTemp;
+            newWeatherArray.push(element);
+        }
+    });
+    return newWeatherArray;
+}
+exports.weatherClearAndSort = weatherClearAndSort;
 //# sourceMappingURL=helperfunctions.js.map
