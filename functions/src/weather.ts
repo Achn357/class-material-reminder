@@ -10,3 +10,4 @@ export class weather{
         return this.weatherArray;
     }
 }
+
