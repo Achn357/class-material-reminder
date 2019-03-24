@@ -106,33 +106,12 @@ export class notifications {
 
     }
 
-    /**
-     * 
-     * @param sch give the schedule part of the data like so:
-     * schedule:{
-        Monday:[
-            {id:162684,start:1,endtime:3,name:"Calc"},
-            {id:668234,start:4,endtime:5,name:"Econ"},
-            {id:839257,start:10,endtime:12,name:"Chem"},
-            {id:472959,start:12.25,endtime:13,name:"PHYS"}
-        ],
-        Tuesday:[
-            {id:473875,start:2,endtime:3,name:"Engr"},
-            {id:789324,start:6,endtime:8,name:"Arts"},
-            {id:162684,start:13,endtime:20,name:"Calc"},
-            
-        ],
-                            .
-                            .
-                        (more days)
-                            .
-                            .                                                                                    
-        Sunday:[
-            {id:367814,start:3,endtime:4,name:"rec"},
-            {id:472938,start:15,endtime:20,name:"study"}
-        ]
-    }
-     */
+     
+     //@param sch give the schedule part of the data like so:
+
+
+ 
+
     public get_batch_for_entireschedule() {
         const ids_by_day = {
             Monday: [],
@@ -196,3 +175,46 @@ export class notifications {
 
 }
 
+const data = {
+    schedule: {
+        Monday: [
+            { id: 162684, start: 1, endtime: 3, name: "Calc" },
+            { id: 668234, start: 4, endtime: 5, name: "Econ" },
+            { id: 839257, start: 10, endtime: 12, name: "Chem" },
+            { id: 472959, start: 12.25, endtime: 13, name: "PHYS" }
+        ],
+        Tuesday: [
+            { id: 473875, start: 2, endtime: 3, name: "Engr" },
+            { id: 789324, start: 6, endtime: 8, name: "Arts" },
+            { id: 162684, start: 13, endtime: 20, name: "Calc" }
+        ],
+        Wednesday: [
+            { id: 162684, start: 1, endtime: 3, name: "Calc" },
+            { id: 668234, start: 4, endtime: 5, name: "Econ" },
+            { id: 839257, start: 10, endtime: 12, name: "Chem" },
+            { id: 472959, start: 12.25, endtime: 13, name: "PHYS" }
+        ],
+        Thursday: [
+            { id: 473875, start: 2, endtime: 3, name: "Engr" },
+            { id: 789324, start: 6, endtime: 8, name: "Arts" },
+            { id: 162684, start: 13, endtime: 20, name: "Calc" }
+        ],
+        Friday: [
+            { id: 162684, start: 1, endtime: 3, name: "Calc" },
+            { id: 668234, start: 4, endtime: 5, name: "Econ" },
+            { id: 839257, start: 10, endtime: 12, name: "Chem" },
+            { id: 472959, start: 12.25, endtime: 13, name: "PHYS" }
+        ],
+        Saturday: [
+            { id: 367814, start: 3, endtime: 4, name: "rec" },
+            { id: 472938, start: 15, endtime: 20, name: "study" }
+        ],
+        Sunday: [
+            { id: 367814, start: 3, endtime: 4, name: "rec" },
+            { id: 472938, start: 15, endtime: 20, name: "study" }
+        ]
+    }
+}
+
+const one = new notifications(data);
+console.log(one.get_batch_for_entireschedule());
