@@ -1,4 +1,4 @@
-import {config, firebase_recursive_token} from './enviornment/env'
+import {config, firebase_recursive_token} from './environment/env'
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import * as hp from './helperfunctions';
@@ -284,8 +284,21 @@ export const deleteUserWeather = functions.runWith({
       
 })
 
+export const onStorageUpload = functions.storage.object().onFinalize(async (snap,context) =>{
+  const Imagename = snap.name; //the image name should be named as the uid
+  const Timestamp = context.timestamp;
+  const FilePath = snap.id;
+
+  return await firestore.collection('storagePairings').doc(Imagename).set({
+    name:Imagename,
+    timestamp:Timestamp,
+    filePath: FilePath
+  }).catch(err => console.log(`Error in trying to pair upload information. Cloud Function: onStorageUpload. Error: ${err}`));
+
+})
+
 export const getCalendarEvents = functions.https.onRequest((request, response) => {
-  const correct_schema = {calendarLocation:""};
+  const correct_schema = {"calendarLocation":""};
   const sch = new schemaChecker(correct_schema);
   const check = sch.compare_schema(request.body)
   

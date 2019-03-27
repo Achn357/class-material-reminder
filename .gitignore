@@ -2,4 +2,6 @@ node_modules
 .DS_Store
 .firebase
 firebase.json
-enviornment
+environment
+%RESOURCE_DIR%
+$RESOURCE_DIR
